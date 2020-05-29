@@ -21,6 +21,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
         public string ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
         {
             var svalue = value as string;
+
             if (string.IsNullOrWhiteSpace(svalue))
                 return null;
 
@@ -40,20 +41,14 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
         public object FromArtifact(string value, PropertyType propertyType, object currentValue)
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return value;
-
-            if (!GuidUdi.TryParse(value, out var udi))
-                return value;
-
-            if (udi.EntityType != Constants.UdiEntityType.Store)
+            if (string.IsNullOrWhiteSpace(value) || !GuidUdi.TryParse(value, out var udi) || udi.EntityType != Constants.UdiEntityType.Store)
                 return value;
 
             var store = _venderApi.GetStore(udi.Guid);
-            if (store == null)
-                return value;
+            if (store != null)
+                return store.Id.ToString();
 
-            return store.Id.ToString();
+            return value; // or null?
         }
     }
 }
