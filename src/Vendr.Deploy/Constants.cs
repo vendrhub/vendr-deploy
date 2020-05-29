@@ -5,6 +5,8 @@
         public static class UdiEntityType
         {
             public const string Store = "vendr-store";
+
+            public const string Currency = "vendr-currency";
         }
     }
 }
