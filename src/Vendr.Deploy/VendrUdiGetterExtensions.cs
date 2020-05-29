@@ -6,6 +6,6 @@ namespace Vendr.Deploy
     internal static class VendrUdiGetterExtensions
     {
         public static GuidUdi GetUdi(this StoreReadOnly entity)
-            => new GuidUdi("vendr-store", entity.Id);
+            => new GuidUdi(Constants.UdiEntityType.Store, entity.Id);
     }
 }

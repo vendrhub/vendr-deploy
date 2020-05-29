@@ -5,13 +5,13 @@ using Umbraco.Core;
 using Umbraco.Core.Deploy;
 using Umbraco.Deploy.Connectors.ServiceConnectors;
 using Umbraco.Deploy.Exceptions;
+using Vendr.Core.Api;
 using Vendr.Core.Models;
-using Vendr.Core.Services;
 using Vendr.Deploy.Artifacts;
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
-    [UdiDefinition("vendr-store", UdiType.GuidUdi)]
+    [UdiDefinition(Constants.UdiEntityType.Store, UdiType.GuidUdi)]
     public class VendrStoreServiceConnector : ServiceConnectorBase<StoreArtifact, GuidUdi, ArtifactDeployState<StoreArtifact, StoreReadOnly>>
     {
         private static readonly string[] ValidOpenSelectors = new []
@@ -20,11 +20,11 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             "descendants"
         };
 
-        private readonly IStoreService _storeService;
+        private readonly IVendrApi _vendrApi;
 
-        public VendrStoreServiceConnector(IStoreService storeService)
+        public VendrStoreServiceConnector(IVendrApi vendrApi)
         {
-            _storeService = storeService;
+            _vendrApi = vendrApi;
         }
 
         public override StoreArtifact GetArtifact(object o)
@@ -40,7 +40,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
         {
             EnsureType(udi);
 
-            return GetArtifact(udi, _storeService.GetStore(udi.Guid));
+            return GetArtifact(udi, _vendrApi.GetStore(udi.Guid));
         }
 
         private StoreArtifact GetArtifact(GuidUdi udi, StoreReadOnly store)
@@ -66,7 +66,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 return new NamedUdiRange(udi, "ALL VENDR STORES", selector);
             }
 
-            var store = _storeService.GetStore(udi.Guid);
+            var store = _vendrApi.GetStore(udi.Guid);
             if (store == null)
                 throw new ArgumentException("Could not find an entity with the specified identifier.", nameof(udi));
 
@@ -85,7 +85,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 throw new ArgumentException("Invalid identifier.", nameof(sid));
 
             
-            var store = _storeService.GetStore(result);
+            var store = _vendrApi.GetStore(result);
             if (store == null)
                 throw new ArgumentException("Could not find an entity with the specified identifier.", nameof(sid));
 
@@ -105,11 +105,11 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 EnsureSelector(range, ValidOpenSelectors);
 
-                udis.AddRange(_storeService.GetStores().Select(e => e.GetUdi()));
+                udis.AddRange(_vendrApi.GetStores().Select(e => e.GetUdi()));
             }
             else
             {
-                var store = _storeService.GetStore(((GuidUdi)range.Udi).Guid);
+                var store = _vendrApi.GetStore(((GuidUdi)range.Udi).Guid);
                 if (store == null)
                     return;
 
@@ -123,7 +123,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
         {
             EnsureType(art.Udi);
 
-            var store = _storeService.GetStore(art.Udi.Guid);
+            var store = _vendrApi.GetStore(art.Udi.Guid);
 
             return ArtifactDeployState.Create(art, store, this, 0);
         }

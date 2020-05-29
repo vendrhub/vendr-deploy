@@ -1,22 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
+using Umbraco.Core;
 using Umbraco.Core.Deploy;
 using Umbraco.Core.Models;
+using Vendr.Core.Api;
 
 namespace Vendr.Deploy.Connectors.ValueConnectors
 {
-    public class StorePickerValueConnector : IValueConnector
+    public class VendrStorePickerValueConnector : IValueConnector
     {
+        private readonly IVendrApi _venderApi;
+
         public IEnumerable<string> PropertyEditorAliases => new[] { "Vendr.StorePicker" };
 
-        public object FromArtifact(string value, PropertyType propertyType, object currentValue)
+        public VendrStorePickerValueConnector(IVendrApi venderApi)
         {
-            throw new NotImplementedException();
+            _venderApi = venderApi;
         }
 
         public string ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
         {
-            throw new NotImplementedException();
+            var svalue = value as string;
+            if (string.IsNullOrWhiteSpace(svalue))
+                return null;
+
+            if (!Guid.TryParse(svalue, out var storeId))
+                return null;
+
+            var store = _venderApi.GetStore(storeId);
+            if (store == null)
+                return null;
+
+            var udi = new GuidUdi(Constants.UdiEntityType.Store, storeId);
+
+            dependencies.Add(new ArtifactDependency(udi, false, ArtifactDependencyMode.Exist));
+
+            return udi.ToString();
+        }
+
+        public object FromArtifact(string value, PropertyType propertyType, object currentValue)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return value;
+
+            if (!GuidUdi.TryParse(value, out var udi))
+                return value;
+
+            if (udi.EntityType != Constants.UdiEntityType.Store)
+                return value;
+
+            var store = _venderApi.GetStore(udi.Guid);
+            if (store == null)
+                return value;
+
+            return store.Id.ToString();
         }
     }
 }
