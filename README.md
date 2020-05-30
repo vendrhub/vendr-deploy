@@ -10,7 +10,7 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 #### Serializing
 
 - [x] Serialize Stores
-- [x] Serialize Order Statues
+- [x] Serialize Order Statuses
 - [ ] Serialize Shipping Methods
 - [ ] Serialize Payment Methods
 - [ ] Serialize Countries
