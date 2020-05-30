@@ -32,6 +32,7 @@ namespace Vendr.Deploy.Composing
             // Add in Forms Entities as valid Disk entities that can be written out	
             _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.Store);
             _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.OrderStatus);
+            _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.EmailTemplate);
 
             // TODO: Other entities
 
@@ -42,6 +43,10 @@ namespace Vendr.Deploy.Composing
             // OrderStatus
             EventHub.NotificationEvents.OnOrderStatusSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.OrderStatus) }));
             EventHub.NotificationEvents.OnOrderStatusDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.OrderStatus) }));
+
+            // EmailTemplate
+            EventHub.NotificationEvents.OnEmailTemplateSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.EmailTemplate) }));
+            EventHub.NotificationEvents.OnEmailTemplateDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.EmailTemplate) }));
 
             // TODO: Other entity events
         }

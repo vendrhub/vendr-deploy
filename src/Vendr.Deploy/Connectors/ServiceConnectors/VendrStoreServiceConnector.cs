@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
-using Umbraco.Deploy.Connectors.ServiceConnectors;
-using Umbraco.Deploy.Exceptions;
+using Umbraco.Core.Services;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
@@ -12,60 +10,85 @@ using Vendr.Deploy.Artifacts;
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
     [UdiDefinition(Constants.UdiEntityType.Store, UdiType.GuidUdi)]
-    public class VendrStoreServiceConnector : ServiceConnectorBase<StoreArtifact, GuidUdi, ArtifactDeployState<StoreArtifact, StoreReadOnly>>
+    public class VendrStoreServiceConnector : VendrEntityServiceConnectorBase<StoreArtifact, StoreReadOnly>
     {
-        private static readonly int[] ProcessPasses = new [] 
+        private readonly IUserService _userService;
+
+        public override int[] ProcessPasses => new [] 
         {
             1,
             3
         };
 
-        private static readonly string[] ValidOpenSelectors = new []
+        public override string[] ValidOpenSelectors => new []
         {
             "this-and-descendants",
             "descendants"
         };
 
-        private readonly IVendrApi _vendrApi;
+        public override string AllEntitiesRangeName => "ALL STORED";
 
-        public VendrStoreServiceConnector(IVendrApi vendrApi)
+        public override string UdiEntityType => Constants.UdiEntityType.Store;
+
+        public VendrStoreServiceConnector(IVendrApi vendrApi, IUserService userService)
+            : base(vendrApi)
         {
-            _vendrApi = vendrApi;
+            _userService = userService;
         }
 
-        public override StoreArtifact GetArtifact(object o)
-        {
-            var store = o as StoreReadOnly;
-            if (store == null)
-                throw new InvalidEntityTypeException(string.Format("Unexpected entity type \"{0}\".", (object)o.GetType().FullName));
+        public override string GetEntityName(StoreReadOnly entity)
+            => entity.Name;
 
-            return GetArtifact(store.GetUdi(), store);
-        }
+        public override StoreReadOnly GetEntity(Guid id)
+            => _vendrApi.GetStore(id);
 
-        public override StoreArtifact GetArtifact(GuidUdi udi)
-        {
-            EnsureType(udi);
+        public override IEnumerable<StoreReadOnly> GetEntities()
+            => _vendrApi.GetStores();
 
-            return GetArtifact(udi, _vendrApi.GetStore(udi.Guid));
-        }
-
-        private StoreArtifact GetArtifact(GuidUdi udi, StoreReadOnly entity)
+        public override StoreArtifact GetArtifact(GuidUdi udi, StoreReadOnly entity)
         {
             if (entity == null)
                 return null;
 
             // TODO: Add the "defaults" as dependencies?
-            // Need to know if Deploy enforces them existing prior to creating the store
-            // entity as if that's the case, we can't have that, as store entities
-            // require a store to exist prior their own creation
 
             var dependencies = new ArtifactDependencyCollection();
 
             var artifact = new StoreArtifact(udi, dependencies)
             {
                 Name = entity.Name,
-                Alias = entity.Alias
+                Alias = entity.Alias,
+                PricesIncludeTax = entity.PricesIncludeTax,
+                CookieTimeout = entity.CookieTimeout,
+                CartNumberTemplate = entity.CartNumberTemplate,
+                OrderNumberTemplate = entity.OrderNumberTemplate,
+                ProductPropertyAliases = entity.ProductPropertyAliases,
+                ProductUniquenessPropertyAliases = entity.ProductUniquenessPropertyAliases,
+                GiftCardCodeLength = entity.GiftCardCodeLength,
+                GiftCardDaysValid = entity.GiftCardDaysValid,
+                GiftCardCodeTemplate = entity.GiftCardCodeTemplate,
+                GiftCardPropertyAliases = entity.GiftCardPropertyAliases,
+                GiftCardActivationMethod = (int)entity.GiftCardActivationMethod,
+                OrderEditorConfig = entity.OrderEditorConfig
             };
+
+            // Default country
+            if (entity.DefaultCountryId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.Country, entity.DefaultCountryId.Value);
+                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.DefaultCountryId = depUdi;
+            }
+
+            // Default tax class
+            if (entity.DefaultTaxClassId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.TaxClass, entity.DefaultTaxClassId.Value);
+                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.DefaultTaxClassId = depUdi;
+            }
 
             // Default order status
             if (entity.DefaultOrderStatusId.HasValue)
@@ -76,82 +99,109 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 artifact.DefaultOrderStatusId = depUdi;
             }
 
+            // Error order status
+            if (entity.ErrorOrderStatusId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.OrderStatus, entity.ErrorOrderStatusId.Value);
+                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.ErrorOrderStatusId = depUdi;
+            }
+
+            // Gift card activation order status
+            if (entity.GiftCardActivationOrderStatusId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.OrderStatus, entity.GiftCardActivationOrderStatusId.Value);
+                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.GiftCardActivationOrderStatusId = depUdi;
+            }
+
+            // Gift card email template
+            if (entity.DefaultGiftCardEmailTemplateId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.EmailTemplate, entity.DefaultGiftCardEmailTemplateId.Value);
+                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.DefaultGiftCardEmailTemplateId = depUdi;
+            }
+
+            // Confirmation email template
+            if (entity.ConfirmationEmailTemplateId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.EmailTemplate, entity.ConfirmationEmailTemplateId.Value);
+                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.ConfirmationEmailTemplateId = depUdi;
+            }
+
+            // Error email template
+            if (entity.ErrorEmailTemplateId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.EmailTemplate, entity.ErrorEmailTemplateId.Value);
+                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.ErrorEmailTemplateId = depUdi;
+            }
+
+            // Allowed users
+            // NB: Users can't be deployed so don't add to dependencies collection
+            // instead we'll just have to hope that they exist on all environments
+            // and if not, when it comes to restore, we'll just not set anything
+            if (entity.AllowedUsers.Count > 0)
+            {
+                var userUdis = new List<StringUdi>();
+
+                foreach (var id in entity.AllowedUsers)
+                {
+                    var user = _userService.GetByProviderKey(id.UserId);
+                    if (user != null)
+                    {
+                        userUdis.Add(new StringUdi("user", user.Username));
+                    } 
+                }
+
+                if (userUdis.Count > 0)
+                {
+                    artifact.AllowedUsers = userUdis;
+                }
+            }
+
+            // Allowed user roles
+            // NB: Users roles can't be deployed so don't add to dependencies collection
+            // instead we'll just have to hope that they exist on all environments
+            // and if not, when it comes to restore, we'll just not set anything
+            if (entity.AllowedUserRoles.Count > 0)
+            {
+                var userRoleUdis = new List<GuidUdi>();
+
+                foreach (var role in entity.AllowedUserRoles)
+                {
+                    var userGroup = _userService.GetUserGroupByAlias(role.Role);
+                    if (userGroup != null)
+                    {
+                        userRoleUdis.Add(new GuidUdi("user-group", userGroup.Key));
+                    }
+                }
+
+                if (userRoleUdis.Count > 0)
+                {
+                    artifact.AllowedUserRoles = userRoleUdis;
+                }
+            }
+
+            // Stock sharing store
+            if (entity.ShareStockFromStoreId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.Store, entity.ShareStockFromStoreId.Value);
+                var dep = new ArtifactDependency(depUdi, true, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.ShareStockFromStoreId = depUdi;
+            }
+
             return artifact;
         }
-
-        public override NamedUdiRange GetRange(GuidUdi udi, string selector)
-        {
-            EnsureType(udi);
-
-            if (udi.IsRoot)
-            {
-                EnsureSelector(selector, ValidOpenSelectors);
-
-                return new NamedUdiRange(udi, "ALL VENDR STORES", selector);
-            }
-
-            var store = _vendrApi.GetStore(udi.Guid);
-            if (store == null)
-                throw new ArgumentException("Could not find an entity with the specified identifier.", nameof(udi));
-
-            return GetRange(store, selector);
-        }
-
-        public override NamedUdiRange GetRange(string entityType, string sid, string selector)
-        {
-            if (sid == "-1")
-            {
-                EnsureSelector(selector, ValidOpenSelectors);
-                return new NamedUdiRange(Udi.Create(Constants.UdiEntityType.Store), "ALL VENDR STORES", selector);
-            }
-
-            if (!Guid.TryParse(sid, out Guid result))
-                throw new ArgumentException("Invalid identifier.", nameof(sid));
-
-            
-            var store = _vendrApi.GetStore(result);
-            if (store == null)
-                throw new ArgumentException("Could not find an entity with the specified identifier.", nameof(sid));
-
-            return GetRange(store, selector);
-        }
-
-        private static NamedUdiRange GetRange(StoreReadOnly e, string selector)
-        {
-            return new NamedUdiRange(e.GetUdi(), e.Name, selector);
-        }
-
-        public override void Explode(UdiRange range, List<Udi> udis)
-        {
-            EnsureType(range.Udi);
-            
-            if (range.Udi.IsRoot)
-            {
-                EnsureSelector(range, ValidOpenSelectors);
-
-                udis.AddRange(_vendrApi.GetStores().Select(e => e.GetUdi()));
-            }
-            else
-            {
-                var store = _vendrApi.GetStore(((GuidUdi)range.Udi).Guid);
-                if (store == null)
-                    return;
-
-                EnsureSelector(range.Selector, new [] { "this" });
-
-                udis.Add(store.GetUdi());
-            }
-        }
-
-        public override ArtifactDeployState<StoreArtifact, StoreReadOnly> ProcessInit(StoreArtifact art, IDeployContext context)
-        {
-            EnsureType(art.Udi);
-
-            var store = _vendrApi.GetStore(art.Udi.Guid);
-
-            return ArtifactDeployState.Create(art, store, this, ProcessPasses[0]);
-        }
-
+                
         public override void Process(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context, int pass)
         {
             // TODO: NEED TO DO MULTI PASSES FOR INNER ENTITIES
@@ -177,13 +227,16 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 
                 // Default Order Status
                 // Not sure if this needs to occur in a later pass
+
                 Guid? defaultOrderStatusId = null;
+
                 if (artifact.DefaultOrderStatusId != null)
                 {
                     artifact.DefaultOrderStatusId.EnsureType(Constants.UdiEntityType.OrderStatus);
 
                     defaultOrderStatusId = _vendrApi.GetOrderStatus(artifact.DefaultOrderStatusId.Guid)?.Id;
                 }
+
                 entity.SetDefaultOrderStatus(defaultOrderStatusId);
 
                 _vendrApi.SaveStore(entity);

@@ -81,7 +81,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var artifact = state.Artifact;
                 var entity = state.Entity?.AsWritable(uow) ?? OrderStatus.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.Alias, artifact.Name);
 
-                entity.SetColor(artifact.Color)
+                entity.SetName(artifact.Name, artifact.Alias)
+                    .SetColor(artifact.Color)
                     .SetSortOrder(artifact.SortOrder);
 
                 _vendrApi.SaveOrderStatus(entity);
