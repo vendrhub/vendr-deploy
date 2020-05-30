@@ -30,3 +30,10 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 - [ ] Restore Currencies
 - [ ] Restore Tax Classes
 - [ ] Restore Email Templates
+
+### Property Editors
+
+- [x] Store Picker
+- [x] Store Entity Picker
+- [x] Price
+- [ ] Variants (future)
