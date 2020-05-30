@@ -22,7 +22,7 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 #### Restoring
 
 - [ ] Restore Stores
-- [ ] Restore Order Statues
+- [ ] Restore Order Statuses
 - [ ] Restore Shipping Methods
 - [ ] Restore Payment Methods
 - [ ] Restore Countries
