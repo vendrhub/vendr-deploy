@@ -169,12 +169,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Artifacts\TaxClassArtifact.cs" />
     <Compile Include="Artifacts\EmailTemplateArtifact.cs" />
     <Compile Include="Artifacts\OrderStatusArtifact.cs" />
     <Compile Include="Artifacts\StoreArtifact.cs" />
     <Compile Include="Artifacts\StoreEntityArtifactBase.cs" />
     <Compile Include="Composing\VendrDeployComponent.cs" />
     <Compile Include="Composing\VendrDeployComposer.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrTaxClassServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrEmailTemplateServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrOrderStatusServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrEntityServiceConnectorBase.cs" />

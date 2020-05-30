@@ -33,6 +33,7 @@ namespace Vendr.Deploy.Composing
             _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.Store);
             _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.OrderStatus);
             _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.EmailTemplate);
+            _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.TaxClass);
 
             // TODO: Other entities
 
@@ -47,6 +48,10 @@ namespace Vendr.Deploy.Composing
             // EmailTemplate
             EventHub.NotificationEvents.OnEmailTemplateSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.EmailTemplate) }));
             EventHub.NotificationEvents.OnEmailTemplateDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.EmailTemplate) }));
+            
+            // EmailTemplate
+            EventHub.NotificationEvents.OnTaxClassSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.TaxClass) }));
+            EventHub.NotificationEvents.OnTaxClassDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.TaxClass) }));
 
             // TODO: Other entity events
         }
