@@ -30,10 +30,10 @@ namespace Vendr.Deploy.Composing
         private void InitializeFormsDiskRefreshers()
         {
             // Add in Forms Entities as valid Disk entities that can be written out	
-            _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.Store);
-            _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.OrderStatus);
-            _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.EmailTemplate);
-            _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.TaxClass);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Store);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.OrderStatus);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.EmailTemplate);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.TaxClass);
 
             // TODO: Other entities
 

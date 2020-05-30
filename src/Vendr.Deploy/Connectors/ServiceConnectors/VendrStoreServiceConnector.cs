@@ -9,7 +9,7 @@ using Vendr.Deploy.Artifacts;
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
-    [UdiDefinition(Constants.UdiEntityType.Store, UdiType.GuidUdi)]
+    [UdiDefinition(VendrConstants.UdiEntityType.Store, UdiType.GuidUdi)]
     public class VendrStoreServiceConnector : VendrEntityServiceConnectorBase<StoreArtifact, StoreReadOnly>
     {
         private readonly IUserService _userService;
@@ -28,7 +28,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string AllEntitiesRangeName => "ALL STORED";
 
-        public override string UdiEntityType => Constants.UdiEntityType.Store;
+        public override string UdiEntityType => VendrConstants.UdiEntityType.Store;
 
         public VendrStoreServiceConnector(IVendrApi vendrApi, IUserService userService)
             : base(vendrApi)
@@ -75,7 +75,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Default country
             if (entity.DefaultCountryId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.Country, entity.DefaultCountryId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, entity.DefaultCountryId.Value);
                 var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.DefaultCountryId = depUdi;
@@ -84,7 +84,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Default tax class
             if (entity.DefaultTaxClassId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.TaxClass, entity.DefaultTaxClassId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.TaxClass, entity.DefaultTaxClassId.Value);
                 var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.DefaultTaxClassId = depUdi;
@@ -93,7 +93,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Default order status
             if (entity.DefaultOrderStatusId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.OrderStatus, entity.DefaultOrderStatusId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.OrderStatus, entity.DefaultOrderStatusId.Value);
                 var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.DefaultOrderStatusId = depUdi;
@@ -102,7 +102,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Error order status
             if (entity.ErrorOrderStatusId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.OrderStatus, entity.ErrorOrderStatusId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.OrderStatus, entity.ErrorOrderStatusId.Value);
                 var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.ErrorOrderStatusId = depUdi;
@@ -111,7 +111,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Gift card activation order status
             if (entity.GiftCardActivationOrderStatusId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.OrderStatus, entity.GiftCardActivationOrderStatusId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.OrderStatus, entity.GiftCardActivationOrderStatusId.Value);
                 var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.GiftCardActivationOrderStatusId = depUdi;
@@ -120,7 +120,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Gift card email template
             if (entity.DefaultGiftCardEmailTemplateId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.EmailTemplate, entity.DefaultGiftCardEmailTemplateId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.EmailTemplate, entity.DefaultGiftCardEmailTemplateId.Value);
                 var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.DefaultGiftCardEmailTemplateId = depUdi;
@@ -129,7 +129,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Confirmation email template
             if (entity.ConfirmationEmailTemplateId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.EmailTemplate, entity.ConfirmationEmailTemplateId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.EmailTemplate, entity.ConfirmationEmailTemplateId.Value);
                 var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.ConfirmationEmailTemplateId = depUdi;
@@ -138,7 +138,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Error email template
             if (entity.ErrorEmailTemplateId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.EmailTemplate, entity.ErrorEmailTemplateId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.EmailTemplate, entity.ErrorEmailTemplateId.Value);
                 var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.ErrorEmailTemplateId = depUdi;
@@ -193,7 +193,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Stock sharing store
             if (entity.ShareStockFromStoreId.HasValue)
             {
-                var depUdi = new GuidUdi(Constants.UdiEntityType.Store, entity.ShareStockFromStoreId.Value);
+                var depUdi = new GuidUdi(VendrConstants.UdiEntityType.Store, entity.ShareStockFromStoreId.Value);
                 var dep = new ArtifactDependency(depUdi, true, ArtifactDependencyMode.Exist);
                 dependencies.Add(dep);
                 artifact.ShareStockFromStoreId = depUdi;
@@ -232,7 +232,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 if (artifact.DefaultOrderStatusId != null)
                 {
-                    artifact.DefaultOrderStatusId.EnsureType(Constants.UdiEntityType.OrderStatus);
+                    artifact.DefaultOrderStatusId.EnsureType(VendrConstants.UdiEntityType.OrderStatus);
 
                     defaultOrderStatusId = _vendrApi.GetOrderStatus(artifact.DefaultOrderStatusId.Guid)?.Id;
                 }

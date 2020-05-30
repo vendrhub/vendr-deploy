@@ -185,7 +185,7 @@
     <Compile Include="Connectors\ValueConnectors\VendrStoreEntityPickerValueConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrPriceValueConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrStorePickerValueConnector.cs" />
-    <Compile Include="Constants.cs" />
+    <Compile Include="VendrConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VendrUdiGetterExtensions.cs" />
   </ItemGroup>

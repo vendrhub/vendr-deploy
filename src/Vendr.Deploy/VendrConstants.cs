@@ -1,6 +1,6 @@
 ﻿namespace Vendr.Deploy
 {
-    public static class Constants
+    public static class VendrConstants
     {
         public static class UdiEntityType
         {

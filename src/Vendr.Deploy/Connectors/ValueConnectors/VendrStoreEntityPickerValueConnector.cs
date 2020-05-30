@@ -73,21 +73,21 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                 switch (entityType)
                 {
                     case "OrderStatus":
-                        return Constants.UdiEntityType.OrderStatus;
+                        return VendrConstants.UdiEntityType.OrderStatus;
                     case "Country":
-                        return Constants.UdiEntityType.Country;
+                        return VendrConstants.UdiEntityType.Country;
                     case "ShippingMethod":
-                        return Constants.UdiEntityType.ShippingMethod;
+                        return VendrConstants.UdiEntityType.ShippingMethod;
                     case "PaymentMethod":
-                        return Constants.UdiEntityType.PaymentMethod;
+                        return VendrConstants.UdiEntityType.PaymentMethod;
                     case "Currency":
-                        return Constants.UdiEntityType.Currency;
+                        return VendrConstants.UdiEntityType.Currency;
                     case "TaxClass":
-                        return Constants.UdiEntityType.TaxClass;
+                        return VendrConstants.UdiEntityType.TaxClass;
                     case "EmailTemplate":
-                        return Constants.UdiEntityType.EmailTemplate;
+                        return VendrConstants.UdiEntityType.EmailTemplate;
                     case "Discount": // Not sure if discounts should transfer as these are "user generated"
-                        return Constants.UdiEntityType.Discount;
+                        return VendrConstants.UdiEntityType.Discount;
                 }
             }
 
@@ -98,21 +98,21 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
         {
             switch (entityType)
             {
-                case Constants.UdiEntityType.OrderStatus:
+                case VendrConstants.UdiEntityType.OrderStatus:
                     return _venderApi.GetOrderStatus(id);
-                case Constants.UdiEntityType.Country:
+                case VendrConstants.UdiEntityType.Country:
                     return _venderApi.GetCountry(id);
-                case Constants.UdiEntityType.ShippingMethod:
+                case VendrConstants.UdiEntityType.ShippingMethod:
                     return _venderApi.GetShippingMethod(id);
-                case Constants.UdiEntityType.PaymentMethod:
+                case VendrConstants.UdiEntityType.PaymentMethod:
                     return _venderApi.GetPaymentMethod(id);
-                case Constants.UdiEntityType.Currency:
+                case VendrConstants.UdiEntityType.Currency:
                     return _venderApi.GetCurrency(id);
-                case Constants.UdiEntityType.TaxClass:
+                case VendrConstants.UdiEntityType.TaxClass:
                     return _venderApi.GetTaxClass(id);
-                case Constants.UdiEntityType.EmailTemplate:
+                case VendrConstants.UdiEntityType.EmailTemplate:
                     return _venderApi.GetEmailTemplate(id);
-                case Constants.UdiEntityType.Discount:  // Not sure if discounts should transfer as these are "user generated"
+                case VendrConstants.UdiEntityType.Discount:  // Not sure if discounts should transfer as these are "user generated"
                     return _venderApi.GetDiscount(id);
             }
 

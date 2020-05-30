@@ -8,7 +8,7 @@ using Vendr.Deploy.Artifacts;
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
-    [UdiDefinition(Constants.UdiEntityType.EmailTemplate, UdiType.GuidUdi)]
+    [UdiDefinition(VendrConstants.UdiEntityType.EmailTemplate, UdiType.GuidUdi)]
     public class VendrEmailTemplateServiceConnector : VendrStoreEntityServiceConnectorBase<EmailTemplateArtifact, EmailTemplateReadOnly, EmailTemplate, EmailTemplateState>
     {
         public override int[] ProcessPasses => new [] 
@@ -24,7 +24,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string AllEntitiesRangeName => "ALL VENDR EMAIL TEMPLATE";
 
-        public override string UdiEntityType => Constants.UdiEntityType.EmailTemplate;
+        public override string UdiEntityType => VendrConstants.UdiEntityType.EmailTemplate;
 
         public VendrEmailTemplateServiceConnector(IVendrApi vendrApi)
             : base(vendrApi)
@@ -44,7 +44,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity == null)
                 return null;
 
-            var storeUdi = new GuidUdi(Constants.UdiEntityType.Store, entity.StoreId);
+            var storeUdi = new GuidUdi(VendrConstants.UdiEntityType.Store, entity.StoreId);
 
             var dependencies = new ArtifactDependencyCollection
             {

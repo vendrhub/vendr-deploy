@@ -8,7 +8,7 @@ using Vendr.Deploy.Artifacts;
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
-    [UdiDefinition(Constants.UdiEntityType.TaxClass, UdiType.GuidUdi)]
+    [UdiDefinition(VendrConstants.UdiEntityType.TaxClass, UdiType.GuidUdi)]
     public class VendrTaxClassServiceConnector : VendrStoreEntityServiceConnectorBase<TaxClassArtifact, TaxClassReadOnly, TaxClass, TaxClassState>
     {
         public override int[] ProcessPasses => new [] 
@@ -24,7 +24,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string AllEntitiesRangeName => "ALL VENDR TAX CLASSES";
 
-        public override string UdiEntityType => Constants.UdiEntityType.TaxClass;
+        public override string UdiEntityType => VendrConstants.UdiEntityType.TaxClass;
 
         public VendrTaxClassServiceConnector(IVendrApi vendrApi)
             : base(vendrApi)
@@ -44,7 +44,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity == null)
                 return null;
 
-            var storeUdi = new GuidUdi(Constants.UdiEntityType.Store, entity.StoreId);
+            var storeUdi = new GuidUdi(VendrConstants.UdiEntityType.Store, entity.StoreId);
 
             var dependencies = new ArtifactDependencyCollection
             {
@@ -69,7 +69,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     TaxRate = countryRegionTaxRate.TaxRate
                 };
 
-                var countryDepUdi = new GuidUdi(Constants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
+                var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
                 var countryDep = new ArtifactDependency(countryDepUdi, false, ArtifactDependencyMode.Exist);
                 dependencies.Add(countryDep);
 
@@ -77,7 +77,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 if (countryRegionTaxRate.RegionId.HasValue)
                 {
-                    var regionDepUdi = new GuidUdi(Constants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
+                    var regionDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
                     var regionDep = new ArtifactDependency(regionDepUdi, false, ArtifactDependencyMode.Exist);
                     dependencies.Add(regionDep);
 
@@ -121,7 +121,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 foreach (var crtr in artifact.CountryRegionTaxRates)
                 {
-                    crtr.CountryId.EnsureType(Constants.UdiEntityType.Country);
+                    crtr.CountryId.EnsureType(VendrConstants.UdiEntityType.Country);
 
                     if (crtr.RegionId == null)
                     {
@@ -129,7 +129,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     }
                     else
                     {
-                        crtr.RegionId.EnsureType(Constants.UdiEntityType.Region);
+                        crtr.RegionId.EnsureType(VendrConstants.UdiEntityType.Region);
 
                         entity.SetRegionTaxRate(crtr.CountryId.Guid, crtr.RegionId.Guid, crtr.TaxRate);
                     }

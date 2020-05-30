@@ -44,36 +44,36 @@ namespace Vendr.Deploy
         }
 
         public static GuidUdi GetUdi(this StoreReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.Store, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.Store, entity.Id);
 
         public static GuidUdi GetUdi(this CountryReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.Country, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.Country, entity.Id);
 
         public static GuidUdi GetUdi(this RegionReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.Region, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.Region, entity.Id);
 
         public static GuidUdi GetUdi(this OrderStatusReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.OrderStatus, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.OrderStatus, entity.Id);
 
         public static GuidUdi GetUdi(this CurrencyReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.Currency, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.Currency, entity.Id);
 
         public static GuidUdi GetUdi(this ShippingMethodReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.ShippingMethod, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.ShippingMethod, entity.Id);
 
         public static GuidUdi GetUdi(this PaymentMethodReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.PaymentMethod, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.PaymentMethod, entity.Id);
 
         public static GuidUdi GetUdi(this TaxClassReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.TaxClass, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.TaxClass, entity.Id);
 
         public static GuidUdi GetUdi(this EmailTemplateReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.EmailTemplate, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.EmailTemplate, entity.Id);
 
         public static GuidUdi GetUdi(this DiscountReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.Discount, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.Discount, entity.Id);
 
         public static GuidUdi GetUdi(this GiftCardReadOnly entity)
-            => new GuidUdi(Constants.UdiEntityType.GiftCard, entity.Id);
+            => new GuidUdi(VendrConstants.UdiEntityType.GiftCard, entity.Id);
     }
 }

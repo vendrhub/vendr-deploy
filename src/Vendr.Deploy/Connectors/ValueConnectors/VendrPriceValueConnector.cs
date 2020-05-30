@@ -31,7 +31,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
             foreach (var kvp in srcDict)
             {
-                var udi = new GuidUdi(Constants.UdiEntityType.Currency, kvp.Key);
+                var udi = new GuidUdi(VendrConstants.UdiEntityType.Currency, kvp.Key);
 
                 // Because we store Guid IDs anyway we don't neceserily need to fetch
                 // the Currency entity to look anything up, it's mostly a question
@@ -60,7 +60,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
             foreach (var kvp in srcDict)
             {
-                if (GuidUdi.TryParse(kvp.Key, out var udi) && udi.EntityType == Constants.UdiEntityType.Currency)
+                if (GuidUdi.TryParse(kvp.Key, out var udi) && udi.EntityType == VendrConstants.UdiEntityType.Currency)
                 {
                     var currencyEntity = _venderApi.GetCurrency(udi.Guid);
                     if (currencyEntity != null)

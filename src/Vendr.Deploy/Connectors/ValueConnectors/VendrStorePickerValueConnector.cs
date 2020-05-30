@@ -32,7 +32,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             if (store == null)
                 return null;
 
-            var udi = new GuidUdi(Constants.UdiEntityType.Store, storeId);
+            var udi = new GuidUdi(VendrConstants.UdiEntityType.Store, storeId);
 
             dependencies.Add(new ArtifactDependency(udi, false, ArtifactDependencyMode.Exist));
 
@@ -41,7 +41,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
         public object FromArtifact(string value, PropertyType propertyType, object currentValue)
         {
-            if (string.IsNullOrWhiteSpace(value) || !GuidUdi.TryParse(value, out var udi) || udi.EntityType != Constants.UdiEntityType.Store)
+            if (string.IsNullOrWhiteSpace(value) || !GuidUdi.TryParse(value, out var udi) || udi.EntityType != VendrConstants.UdiEntityType.Store)
                 return null;
 
             var store = _venderApi.GetStore(udi.Guid);
