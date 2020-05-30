@@ -31,11 +31,17 @@ namespace Vendr.Deploy.Composing
         {
             // Add in Forms Entities as valid Disk entities that can be written out	
             _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.Store);
+            _diskEntityService.RegisterDiskEntityType(Constants.UdiEntityType.OrderStatus);
+
             // TODO: Other entities
 
             // Stores
             EventHub.NotificationEvents.OnStoreSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.Store) }));
             EventHub.NotificationEvents.OnStoreDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.Store) }));
+            
+            // OrderStatus
+            EventHub.NotificationEvents.OnOrderStatusSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.OrderStatus) }));
+            EventHub.NotificationEvents.OnOrderStatusDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.OrderStatus) }));
 
             // TODO: Other entity events
         }

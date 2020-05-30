@@ -14,6 +14,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
     [UdiDefinition(Constants.UdiEntityType.Store, UdiType.GuidUdi)]
     public class VendrStoreServiceConnector : ServiceConnectorBase<StoreArtifact, GuidUdi, ArtifactDeployState<StoreArtifact, StoreReadOnly>>
     {
+        private static readonly int[] ProcessPasses = new [] 
+        {
+            1,
+            3
+        };
+
         private static readonly string[] ValidOpenSelectors = new []
         {
             "this-and-descendants",
@@ -43,16 +49,34 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             return GetArtifact(udi, _vendrApi.GetStore(udi.Guid));
         }
 
-        private StoreArtifact GetArtifact(GuidUdi udi, StoreReadOnly store)
+        private StoreArtifact GetArtifact(GuidUdi udi, StoreReadOnly entity)
         {
-            if (store == null)
+            if (entity == null)
                 return null;
 
-            return new StoreArtifact(udi, null)
+            // TODO: Add the "defaults" as dependencies?
+            // Need to know if Deploy enforces them existing prior to creating the store
+            // entity as if that's the case, we can't have that, as store entities
+            // require a store to exist prior their own creation
+
+            var dependencies = new ArtifactDependencyCollection();
+
+            var artifact = new StoreArtifact(udi, dependencies)
             {
-                Name = store.Name,
-                Alias = store.Alias
+                Name = entity.Name,
+                Alias = entity.Alias
             };
+
+            // Default order status
+            if (entity.DefaultOrderStatusId.HasValue)
+            {
+                var depUdi = new GuidUdi(Constants.UdiEntityType.OrderStatus, entity.DefaultOrderStatusId.Value);
+                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                dependencies.Add(dep);
+                artifact.DefaultOrderStatusId = depUdi;
+            }
+
+            return artifact;
         }
 
         public override NamedUdiRange GetRange(GuidUdi udi, string selector)
@@ -75,10 +99,10 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override NamedUdiRange GetRange(string entityType, string sid, string selector)
         {
-            if (sid == "*")
+            if (sid == "-1")
             {
                 EnsureSelector(selector, ValidOpenSelectors);
-                return new NamedUdiRange(Udi.Create("vendr-store"), "ALL VENDR STORES", selector);
+                return new NamedUdiRange(Udi.Create(Constants.UdiEntityType.Store), "ALL VENDR STORES", selector);
             }
 
             if (!Guid.TryParse(sid, out Guid result))
@@ -125,31 +149,47 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var store = _vendrApi.GetStore(art.Udi.Guid);
 
-            return ArtifactDeployState.Create(art, store, this, 0);
+            return ArtifactDeployState.Create(art, store, this, ProcessPasses[0]);
         }
 
         public override void Process(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context, int pass)
         {
-            if (pass != 0)
-                throw new ArgumentOutOfRangeException(nameof(pass));
+            // TODO: NEED TO DO MULTI PASSES FOR INNER ENTITIES
 
-            state.NextPass = -1;
+            state.NextPass = GetNextPass(ProcessPasses, pass);
 
-            // TODO: Use or create a store with a given ID
-            // then copy the values over?
-
-            //var store = state.Entity ?? (ILanguage)new Language(state.Artifact.IsoCode);
-
-            //language.CultureName = state.Artifact.Name;
-            //this._localizationService.Save(language, 0);
+            switch (pass)
+            {
+                case 1:
+                    Pass1(state, context);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(pass));
+            }
         }
 
-        protected void EnsureType(Udi udi)
+        private void Pass1(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context)
         {
-            if (udi == null)
-                throw new ArgumentNullException(nameof(udi));
+            using (var uow = _vendrApi.Uow.Create())
+            {
+                var artifact = state.Artifact;
+                var entity = state.Entity?.AsWritable(uow) ?? Store.Create(uow, artifact.Udi.Guid, artifact.Alias, artifact.Name);
+                
+                // Default Order Status
+                // Not sure if this needs to occur in a later pass
+                Guid? defaultOrderStatusId = null;
+                if (artifact.DefaultOrderStatusId != null)
+                {
+                    artifact.DefaultOrderStatusId.EnsureType(Constants.UdiEntityType.OrderStatus);
 
-            udi.EnsureType(ValidEntityTypes);
+                    defaultOrderStatusId = _vendrApi.GetOrderStatus(artifact.DefaultOrderStatusId.Guid)?.Id;
+                }
+                entity.SetDefaultOrderStatus(defaultOrderStatusId);
+
+                _vendrApi.SaveStore(entity);
+
+                uow.Complete();
+            }
         }
     }
 }

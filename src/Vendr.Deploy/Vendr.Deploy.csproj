@@ -164,14 +164,17 @@
     <Reference Include="Umbraco.Deploy.UI, Version=3.4.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\UmbracoDeploy.3.4.5\lib\net45\Umbraco.Deploy.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Vendr.Core, Version=1.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Vendr.Core.1.2.2\lib\net472\Vendr.Core.dll</HintPath>
+    <Reference Include="Vendr.Core, Version=1.2.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Vendr.Core.1.2.3-beta0002\lib\net472\Vendr.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Artifacts\OrderStatusArtifact.cs" />
     <Compile Include="Artifacts\StoreArtifact.cs" />
+    <Compile Include="Artifacts\StoreEntityArtifactBase.cs" />
     <Compile Include="Composing\VendrDeployComponent.cs" />
     <Compile Include="Composing\VendrDeployComposer.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrOrderStatusServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrStoreServiceConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrStoreEntityPickerValueConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrPriceValueConnector.cs" />
@@ -184,9 +187,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Events\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets" Condition="Exists('..\..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -195,4 +196,16 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Umbraco.SqlServerCE.4.0.0.1\build\Umbraco.SqlServerCE.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>REM #################################################
+REM # Copy files
+REM #################################################
+
+IF %25ComputerName%25 == DESKTOP-ESFKU58 (
+IF NOT "$(SolutionDir)" == "*Undefined*" (
+xcopy /s /y "$(TargetPath)" "$(SolutionDir)\..\SandboxCloud\bin"
+xcopy /s /y "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)\..\SandboxCloud\bin"
+)
+)</PostBuildEvent>
+  </PropertyGroup>
 </Project>
