@@ -175,6 +175,7 @@
     <Compile Include="Composing\VendrDeployComponent.cs" />
     <Compile Include="Composing\VendrDeployComposer.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrOrderStatusServiceConnector.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrStoreEntityServiceConnectorBase.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrStoreServiceConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrStoreEntityPickerValueConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrPriceValueConnector.cs" />

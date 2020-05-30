@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
-using Umbraco.Deploy.Connectors.ServiceConnectors;
-using Umbraco.Deploy.Exceptions;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
@@ -12,43 +9,37 @@ using Vendr.Deploy.Artifacts;
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
     [UdiDefinition(Constants.UdiEntityType.OrderStatus, UdiType.GuidUdi)]
-    public class VendrOrderStatusServiceConnector : ServiceConnectorBase<OrderStatusArtifact, GuidUdi, ArtifactDeployState<OrderStatusArtifact, OrderStatusReadOnly>>
+    public class VendrOrderStatusServiceConnector : VendrStoreEntityServiceConnectorBase<OrderStatusArtifact, OrderStatusReadOnly, OrderStatus, OrderStatusState>
     {
-        private static readonly int[] ProcessPasses = new [] 
+        public override int[] ProcessPasses => new [] 
         {
             2
         };
 
-        private static readonly string[] ValidOpenSelectors = new []
+        public override string[] ValidOpenSelectors => new []
         {
             "this-and-descendants",
             "descendants"
         };
 
-        private readonly IVendrApi _vendrApi;
+        public override string AllEntitiesRangeName => "ALL VENDR ORDER STATUSES";
+
+        public override string UdiEntityType => Constants.UdiEntityType.OrderStatus;
 
         public VendrOrderStatusServiceConnector(IVendrApi vendrApi)
-        {
-            _vendrApi = vendrApi;
-        }
+            : base(vendrApi)
+        { }
 
-        public override OrderStatusArtifact GetArtifact(object o)
-        {
-            var entity = o as OrderStatusReadOnly;
-            if (entity == null)
-                throw new InvalidEntityTypeException(string.Format("Unexpected entity type \"{0}\".", o.GetType().FullName));
+        public override string GetEntityName(OrderStatusReadOnly entity)
+            => entity.Name;
 
-            return GetArtifact(entity.GetUdi(), entity);
-        }
+        public override OrderStatusReadOnly GetEntity(Guid id)
+            => _vendrApi.GetOrderStatus(id);
 
-        public override OrderStatusArtifact GetArtifact(GuidUdi udi)
-        {
-            EnsureType(udi);
+        public override IEnumerable<OrderStatusReadOnly> GetEntities(Guid storeId)
+            => _vendrApi.GetOrderStatuses(storeId);
 
-            return GetArtifact(udi, _vendrApi.GetOrderStatus(udi.Guid));
-        }
-
-        private OrderStatusArtifact GetArtifact(GuidUdi udi, OrderStatusReadOnly entity)
+        public override OrderStatusArtifact GetArtifact(GuidUdi udi, OrderStatusReadOnly entity)
         {
             if (entity == null)
                 return null;
@@ -67,83 +58,6 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 Color = entity.Color,
                 SortOrder = entity.SortOrder
             };
-        }
-
-        public override NamedUdiRange GetRange(GuidUdi udi, string selector)
-        {
-            EnsureType(udi);
-
-            if (udi.IsRoot)
-            {
-                EnsureSelector(selector, ValidOpenSelectors);
-
-                return new NamedUdiRange(udi, "ALL VENDR ORDER STATUSES", selector);
-            }
-
-            var entity = _vendrApi.GetOrderStatus(udi.Guid);
-            if (entity == null)
-                throw new ArgumentException("Could not find an entity with the specified identifier.", nameof(udi));
-
-            return GetRange(entity, selector);
-        }
-
-        public override NamedUdiRange GetRange(string entityType, string sid, string selector)
-        {
-            if (sid == "-1") 
-            {
-                EnsureSelector(selector, ValidOpenSelectors);
-                return new NamedUdiRange(Udi.Create(Constants.UdiEntityType.OrderStatus), "ALL VENDR ORDER STATUSES", selector);
-            }
-
-            if (!Guid.TryParse(sid, out Guid result))
-                throw new ArgumentException("Invalid identifier.", nameof(sid));
-
-            var entity = _vendrApi.GetOrderStatus(result);
-            if (entity == null)
-                throw new ArgumentException("Could not find an entity with the specified identifier.", nameof(sid));
-
-            return GetRange(entity, selector);
-        }
-
-        private static NamedUdiRange GetRange(OrderStatusReadOnly e, string selector)
-        {
-            return new NamedUdiRange(e.GetUdi(), e.Name, selector);
-        }
-
-        public override void Explode(UdiRange range, List<Udi> udis)
-        {
-            EnsureType(range.Udi);
-            
-            if (range.Udi.IsRoot)
-            {
-                EnsureSelector(range, ValidOpenSelectors);
-
-                var stores = _vendrApi.GetStores();
-
-                foreach (var store in stores)
-                {
-                    udis.AddRange(_vendrApi.GetOrderStatuses(store.Id).Select(e => e.GetUdi()));
-                }
-            }
-            else
-            {
-                var entity = _vendrApi.GetOrderStatus(((GuidUdi)range.Udi).Guid);
-                if (entity == null)
-                    return;
-
-                EnsureSelector(range.Selector, new [] { "this" });
-
-                udis.Add(entity.GetUdi());
-            }
-        }
-
-        public override ArtifactDeployState<OrderStatusArtifact, OrderStatusReadOnly> ProcessInit(OrderStatusArtifact art, IDeployContext context)
-        {
-            EnsureType(art.Udi);
-
-            var entity = _vendrApi.GetOrderStatus(art.Udi.Guid);
-
-            return ArtifactDeployState.Create(art, entity, this, ProcessPasses[0]);
         }
 
         public override void Process(ArtifactDeployState<OrderStatusArtifact, OrderStatusReadOnly> state, IDeployContext context, int pass)
