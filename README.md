@@ -5,7 +5,9 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 
 ## TODO
 
-### Serializing
+### Settings
+
+#### Serializing
 
 - [x] Serialize Stores
 - [x] Serialize Order Statues
@@ -17,7 +19,7 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 - [x] Serialize Tax Classes
 - [x] Serialize Email Templates
 
-### Restoring
+#### Restoring
 
 - [ ] Restore Stores
 - [ ] Restore Order Statues
