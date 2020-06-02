@@ -32,8 +32,13 @@ namespace Vendr.Deploy.Composing
             // Add in Forms Entities as valid Disk entities that can be written out	
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Store);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.OrderStatus);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.EmailTemplate);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.ShippingMethod);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.PaymentMethod);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Country);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Region);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Currency);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.TaxClass);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.EmailTemplate);
 
             // TODO: Other entities
 
@@ -45,13 +50,33 @@ namespace Vendr.Deploy.Composing
             EventHub.NotificationEvents.OnOrderStatusSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.OrderStatus) }));
             EventHub.NotificationEvents.OnOrderStatusDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.OrderStatus) }));
 
+            // ShippingMethod
+            EventHub.NotificationEvents.OnShippingMethodSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.ShippingMethod) }));
+            EventHub.NotificationEvents.OnShippingMethodDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.ShippingMethod) }));
+
+            // PaymentMethod
+            EventHub.NotificationEvents.OnPaymentMethodSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.PaymentMethod) }));
+            EventHub.NotificationEvents.OnPaymentMethodDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.PaymentMethod) }));
+
+            // Country
+            EventHub.NotificationEvents.OnCountrySaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.Country) }));
+            EventHub.NotificationEvents.OnCountryDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.Country) }));
+
+            // Region
+            EventHub.NotificationEvents.OnRegionSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.Region) }));
+            EventHub.NotificationEvents.OnRegionDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.Region) }));
+
+            // Currency
+            EventHub.NotificationEvents.OnCurrencySaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.Currency) }));
+            EventHub.NotificationEvents.OnCurrencyDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.Currency) }));
+
+            // TaxClass
+            EventHub.NotificationEvents.OnTaxClassSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.TaxClass) }));
+            EventHub.NotificationEvents.OnTaxClassDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.TaxClass) }));
+
             // EmailTemplate
             EventHub.NotificationEvents.OnEmailTemplateSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.EmailTemplate) }));
             EventHub.NotificationEvents.OnEmailTemplateDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.EmailTemplate) }));
-            
-            // EmailTemplate
-            EventHub.NotificationEvents.OnTaxClassSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.TaxClass) }));
-            EventHub.NotificationEvents.OnTaxClassDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.TaxClass) }));
 
             // TODO: Other entity events
         }

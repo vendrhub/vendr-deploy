@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
 using Vendr.Core.Api;
@@ -48,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new ArtifactDependency(storeUdi, true, ArtifactDependencyMode.Match)
+                new VendrArtifcateDependency(storeUdi)
             };
 
             var artifcat = new TaxClassArtifact(udi, storeUdi, dependencies)
@@ -70,7 +71,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 };
 
                 var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
-                var countryDep = new ArtifactDependency(countryDepUdi, false, ArtifactDependencyMode.Exist);
+                var countryDep = new VendrArtifcateDependency(countryDepUdi);
                 dependencies.Add(countryDep);
 
                 crtrArtifact.CountryId = countryDepUdi;
@@ -78,7 +79,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 if (countryRegionTaxRate.RegionId.HasValue)
                 {
                     var regionDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
-                    var regionDep = new ArtifactDependency(regionDepUdi, false, ArtifactDependencyMode.Exist);
+                    var regionDep = new VendrArtifcateDependency(regionDepUdi);
                     dependencies.Add(regionDep);
 
                     crtrArtifact.RegionId = regionDepUdi;
@@ -111,13 +112,22 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             using (var uow = _vendrApi.Uow.Create())
             {
                 var artifact = state.Artifact;
+
+                artifact.Udi.EnsureType(VendrConstants.UdiEntityType.TaxClass);
+                artifact.StoreId.EnsureType(VendrConstants.UdiEntityType.Store);
+
                 var entity = state.Entity?.AsWritable(uow) ?? TaxClass.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.Alias, artifact.Name, artifact.DefaultTaxRate);
 
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetDefaultTaxRate(artifact.DefaultTaxRate)
                     .SetSortOrder(artifact.SortOrder);
 
-                // TODO: Clear all tax rates first?
+                // Should probably validate the entity type here too, but really
+                // given we are using guids, the likelyhood of a matching guid
+                // being for a different entity type are pretty slim
+                var countryRegionTaxRatesToRemove = entity.CountryRegionTaxRates
+                    .Where(x => !artifact.CountryRegionTaxRates.Any(y =>  y.CountryId.Guid == x.CountryId && y.RegionId?.Guid == x.RegionId))
+                    .ToList();
 
                 foreach (var crtr in artifact.CountryRegionTaxRates)
                 {
@@ -132,6 +142,18 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                         crtr.RegionId.EnsureType(VendrConstants.UdiEntityType.Region);
 
                         entity.SetRegionTaxRate(crtr.CountryId.Guid, crtr.RegionId.Guid, crtr.TaxRate);
+                    }
+                }
+
+                foreach (var crtr in countryRegionTaxRatesToRemove)
+                {
+                    if (crtr.RegionId == null)
+                    {
+                        entity.ClearCountryTaxRate(crtr.CountryId);
+                    }
+                    else
+                    {
+                        entity.ClearRegionTaxRate(crtr.CountryId, crtr.RegionId.Value);
                     }
                 }
 

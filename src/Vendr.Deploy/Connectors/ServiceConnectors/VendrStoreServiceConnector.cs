@@ -76,7 +76,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.DefaultCountryId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, entity.DefaultCountryId.Value);
-                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.DefaultCountryId = depUdi;
             }
@@ -85,7 +85,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.DefaultTaxClassId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.TaxClass, entity.DefaultTaxClassId.Value);
-                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.DefaultTaxClassId = depUdi;
             }
@@ -94,7 +94,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.DefaultOrderStatusId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.OrderStatus, entity.DefaultOrderStatusId.Value);
-                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.DefaultOrderStatusId = depUdi;
             }
@@ -103,7 +103,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.ErrorOrderStatusId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.OrderStatus, entity.ErrorOrderStatusId.Value);
-                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.ErrorOrderStatusId = depUdi;
             }
@@ -112,7 +112,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.GiftCardActivationOrderStatusId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.OrderStatus, entity.GiftCardActivationOrderStatusId.Value);
-                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.GiftCardActivationOrderStatusId = depUdi;
             }
@@ -121,7 +121,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.DefaultGiftCardEmailTemplateId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.EmailTemplate, entity.DefaultGiftCardEmailTemplateId.Value);
-                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.DefaultGiftCardEmailTemplateId = depUdi;
             }
@@ -130,7 +130,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.ConfirmationEmailTemplateId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.EmailTemplate, entity.ConfirmationEmailTemplateId.Value);
-                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.ConfirmationEmailTemplateId = depUdi;
             }
@@ -139,7 +139,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.ErrorEmailTemplateId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.EmailTemplate, entity.ErrorEmailTemplateId.Value);
-                var dep = new ArtifactDependency(depUdi, false, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.ErrorEmailTemplateId = depUdi;
             }
@@ -158,7 +158,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     if (user != null)
                     {
                         userUdis.Add(new StringUdi("user", user.Username));
-                    } 
+                    }
                 }
 
                 if (userUdis.Count > 0)
@@ -194,7 +194,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.ShareStockFromStoreId.HasValue)
             {
                 var depUdi = new GuidUdi(VendrConstants.UdiEntityType.Store, entity.ShareStockFromStoreId.Value);
-                var dep = new ArtifactDependency(depUdi, true, ArtifactDependencyMode.Exist);
+                var dep = new VendrArtifcateDependency(depUdi);
                 dependencies.Add(dep);
                 artifact.ShareStockFromStoreId = depUdi;
             }
@@ -223,6 +223,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             using (var uow = _vendrApi.Uow.Create())
             {
                 var artifact = state.Artifact;
+
+                artifact.Udi.EnsureType(VendrConstants.UdiEntityType.Store);
+
                 var entity = state.Entity?.AsWritable(uow) ?? Store.Create(uow, artifact.Udi.Guid, artifact.Alias, artifact.Name);
                 
                 // Default Order Status

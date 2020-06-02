@@ -48,7 +48,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new ArtifactDependency(storeUdi, true, ArtifactDependencyMode.Match)
+                new VendrArtifcateDependency(storeUdi)
             };
 
             return new EmailTemplateArtifact(udi, storeUdi, dependencies)
@@ -86,6 +86,10 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             using (var uow = _vendrApi.Uow.Create())
             {
                 var artifact = state.Artifact;
+
+                artifact.Udi.EnsureType(VendrConstants.UdiEntityType.EmailTemplate);
+                artifact.StoreId.EnsureType(VendrConstants.UdiEntityType.Store);
+
                 var entity = state.Entity?.AsWritable(uow) ?? EmailTemplate.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.Alias, artifact.Name);
 
                 entity.SetName(artifact.Name, artifact.Alias)

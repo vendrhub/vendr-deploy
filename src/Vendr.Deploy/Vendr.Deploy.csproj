@@ -169,6 +169,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Artifacts\AllowedCountryRegionArtifact.cs" />
+    <Compile Include="Artifacts\AllowedCountryArtifact.cs" />
+    <Compile Include="Artifacts\ServicePriceArtifact.cs" />
+    <Compile Include="Artifacts\PaymentMethodArtifact.cs" />
+    <Compile Include="Artifacts\ShippingMethodArtifact.cs" />
+    <Compile Include="Artifacts\CurrencyArtifact.cs" />
+    <Compile Include="Artifacts\RegionArtifact.cs" />
+    <Compile Include="Artifacts\CountryArtifact.cs" />
     <Compile Include="Artifacts\TaxClassArtifact.cs" />
     <Compile Include="Artifacts\EmailTemplateArtifact.cs" />
     <Compile Include="Artifacts\OrderStatusArtifact.cs" />
@@ -176,6 +184,11 @@
     <Compile Include="Artifacts\StoreEntityArtifactBase.cs" />
     <Compile Include="Composing\VendrDeployComponent.cs" />
     <Compile Include="Composing\VendrDeployComposer.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrPaymentMethodServiceConnector.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrShippingMethodServiceConnector.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrCurrencyServiceConnector.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrRegionServiceConnector.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrCountryServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrTaxClassServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrEmailTemplateServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrOrderStatusServiceConnector.cs" />
@@ -185,6 +198,7 @@
     <Compile Include="Connectors\ValueConnectors\VendrStoreEntityPickerValueConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrPriceValueConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrStorePickerValueConnector.cs" />
+    <Compile Include="VendrArtifcateDependency.cs" />
     <Compile Include="VendrConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VendrUdiGetterExtensions.cs" />
