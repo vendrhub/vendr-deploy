@@ -11,11 +11,11 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 
 - [x] Serialize Stores
 - [x] Serialize Order Statuses
-- [ ] Serialize Shipping Methods
-- [ ] Serialize Payment Methods
-- [ ] Serialize Countries
-- [ ] Serialize Regions
-- [ ] Serialize Currencies
+- [x] Serialize Shipping Methods (Need to review ImageId)
+- [x] Serialize Payment Methods (Need to review ImageId + Provider Settings)
+- [x] Serialize Countries
+- [x] Serialize Regions
+- [x] Serialize Currencies
 - [x] Serialize Tax Classes
 - [x] Serialize Email Templates
 
