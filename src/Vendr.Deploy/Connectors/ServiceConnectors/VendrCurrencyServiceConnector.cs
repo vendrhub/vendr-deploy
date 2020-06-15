@@ -14,7 +14,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
     {
         public override int[] ProcessPasses => new [] 
         {
-            2
+            2,
+            3
         };
 
         public override string[] ValidOpenSelectors => new []
@@ -91,6 +92,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 case 2:
                     Pass2(state, context);
                     break;
+                case 3:
+                    Pass3(state, context);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pass));
             }
@@ -112,6 +116,21 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     .SetCulture(artifact.CultureName)
                     .SetCustomFormatTemplate(artifact.FormatTemplate)
                     .SetSortOrder(artifact.SortOrder);
+
+                _vendrApi.SaveCurrency(entity);
+
+                state.Entity = entity;
+
+                uow.Complete();
+            }
+        }
+
+        private void Pass3(ArtifactDeployState<CurrencyArtifact, CurrencyReadOnly> state, IDeployContext context)
+        {
+            using (var uow = _vendrApi.Uow.Create())
+            {
+                var artifact = state.Artifact;
+                var entity = state.Entity.AsWritable(uow);
 
                 var allowedCountriesToRemove = entity.AllowedCountries
                     .Where(x => !artifact.AllowedCountries.Any(y => y.CountryId.Guid == x.CountryId))

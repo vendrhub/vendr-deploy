@@ -14,7 +14,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
     {
         public override int[] ProcessPasses => new [] 
         {
-            2
+            2, 3
         };
 
         public override string[] ValidOpenSelectors => new []
@@ -102,6 +102,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 case 2:
                     Pass2(state, context);
                     break;
+                case 3:
+                    Pass3(state, context);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pass));
             }
@@ -122,11 +125,26 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     .SetDefaultTaxRate(artifact.DefaultTaxRate)
                     .SetSortOrder(artifact.SortOrder);
 
+                _vendrApi.SaveTaxClass(entity);
+
+                state.Entity = entity;
+
+                uow.Complete();
+            }
+        }
+
+        private void Pass3(ArtifactDeployState<TaxClassArtifact, TaxClassReadOnly> state, IDeployContext context)
+        {
+            using (var uow = _vendrApi.Uow.Create())
+            {
+                var artifact = state.Artifact;
+                var entity = state.Entity.AsWritable(uow);
+
                 // Should probably validate the entity type here too, but really
                 // given we are using guids, the likelyhood of a matching guid
                 // being for a different entity type are pretty slim
                 var countryRegionTaxRatesToRemove = entity.CountryRegionTaxRates
-                    .Where(x => !artifact.CountryRegionTaxRates.Any(y =>  y.CountryId.Guid == x.CountryId && y.RegionId?.Guid == x.RegionId))
+                    .Where(x => !artifact.CountryRegionTaxRates.Any(y => y.CountryId.Guid == x.CountryId && y.RegionId?.Guid == x.RegionId))
                     .ToList();
 
                 foreach (var crtr in artifact.CountryRegionTaxRates)

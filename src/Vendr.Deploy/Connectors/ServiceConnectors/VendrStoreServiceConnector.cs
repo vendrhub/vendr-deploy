@@ -19,7 +19,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
         public override int[] ProcessPasses => new [] 
         {
             1,
-            3
+            4
         };
 
         public override string[] ValidOpenSelectors => new []
@@ -215,8 +215,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 case 1:
                     Pass1(state, context);
                     break;
-                case 3:
-                    Pass3(state, context);
+                case 4:
+                    Pass4(state, context);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pass));
@@ -231,7 +231,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 artifact.Udi.EnsureType(VendrConstants.UdiEntityType.Store);
 
-                var entity = state.Entity?.AsWritable(uow) ?? Store.Create(uow, artifact.Udi.Guid, artifact.Alias, artifact.Name);
+                var entity = state.Entity?.AsWritable(uow) 
+                    ?? Store.Create(uow, artifact.Udi.Guid, artifact.Alias, artifact.Name, false);
 
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetPriceTaxInclusivity(artifact.PricesIncludeTax)
@@ -277,7 +278,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             }
         }
 
-        private void Pass3(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context)
+        private void Pass4(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context)
         {
             using (var uow = _vendrApi.Uow.Create())
             {

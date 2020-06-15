@@ -13,7 +13,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
     {
         public override int[] ProcessPasses => new [] 
         {
-            2
+            2,
+            3
         };
 
         public override string[] ValidOpenSelectors => new []
@@ -93,6 +94,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 case 2:
                     Pass2(state, context);
                     break;
+                case 3:
+                    Pass3(state, context);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pass));
             }
@@ -114,19 +118,36 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     .SetCode(artifact.Code)
                     .SetSortOrder(artifact.SortOrder);
 
+                _vendrApi.SaveRegion(entity);
+
+                state.Entity = entity;
+
+                uow.Complete();
+            }
+        }
+
+        private void Pass3(ArtifactDeployState<RegionArtifact, RegionReadOnly> state, IDeployContext context)
+        {
+            using (var uow = _vendrApi.Uow.Create())
+            {
+                var artifact = state.Artifact;
+                var entity = state.Entity.AsWritable(uow);
+
                 if (artifact.DefaultPaymentMethodId != null)
                 {
                     artifact.DefaultPaymentMethodId.EnsureType(VendrConstants.UdiEntityType.PaymentMethod);
                     // TODO: Check the payment method exists?
-                    entity.SetDefaultPaymentMethod(artifact.DefaultPaymentMethodId.Guid);
                 }
+
+                entity.SetDefaultPaymentMethod(artifact.DefaultPaymentMethodId?.Guid);
 
                 if (artifact.DefaultShippingMethodId != null)
                 {
                     artifact.DefaultShippingMethodId.EnsureType(VendrConstants.UdiEntityType.ShippingMethod);
                     // TODO: Check the payment method exists?
-                    entity.SetDefaultShippingMethod(artifact.DefaultShippingMethodId.Guid);
                 }
+
+                entity.SetDefaultShippingMethod(artifact.DefaultShippingMethodId?.Guid);
 
                 _vendrApi.SaveRegion(entity);
 
