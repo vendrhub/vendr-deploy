@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
 using Umbraco.Core.Services;
@@ -150,20 +152,20 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // and if not, when it comes to restore, we'll just not set anything
             if (entity.AllowedUsers.Count > 0)
             {
-                var userUdis = new List<StringUdi>();
+                var users = new List<string>();
 
                 foreach (var id in entity.AllowedUsers)
                 {
                     var user = _userService.GetByProviderKey(id.UserId);
                     if (user != null)
                     {
-                        userUdis.Add(new StringUdi("user", user.Username));
+                        users.Add(user.Username);
                     }
                 }
 
-                if (userUdis.Count > 0)
+                if (users.Count > 0)
                 {
-                    artifact.AllowedUsers = userUdis;
+                    artifact.AllowedUsers = users;
                 }
             }
 
@@ -173,20 +175,20 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // and if not, when it comes to restore, we'll just not set anything
             if (entity.AllowedUserRoles.Count > 0)
             {
-                var userRoleUdis = new List<GuidUdi>();
+                var userRoles = new List<string>();
 
                 foreach (var role in entity.AllowedUserRoles)
                 {
                     var userGroup = _userService.GetUserGroupByAlias(role.Role);
                     if (userGroup != null)
                     {
-                        userRoleUdis.Add(new GuidUdi("user-group", userGroup.Key));
+                        userRoles.Add(userGroup.Alias);
                     }
                 }
 
-                if (userRoleUdis.Count > 0)
+                if (userRoles.Count > 0)
                 {
-                    artifact.AllowedUserRoles = userRoleUdis;
+                    artifact.AllowedUserRoles = userRoles;
                 }
             }
 
@@ -213,6 +215,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 case 1:
                     Pass1(state, context);
                     break;
+                case 3:
+                    Pass3(state, context);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pass));
             }
@@ -227,10 +232,83 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 artifact.Udi.EnsureType(VendrConstants.UdiEntityType.Store);
 
                 var entity = state.Entity?.AsWritable(uow) ?? Store.Create(uow, artifact.Udi.Guid, artifact.Alias, artifact.Name);
-                
-                // Default Order Status
-                // Not sure if this needs to occur in a later pass
 
+                entity.SetName(artifact.Name, artifact.Alias)
+                    .SetPriceTaxInclusivity(artifact.PricesIncludeTax)
+                    .SetCartNumberTemplate(artifact.CartNumberTemplate)
+                    .SetOrderNumberTemplate(artifact.OrderNumberTemplate)
+                    .SetProductPropertyAliases(artifact.ProductPropertyAliases, SetBehavior.Merge)
+                    .SetProductUniquenessPropertyAliases(artifact.ProductUniquenessPropertyAliases, SetBehavior.Merge)
+                    .SetGiftCardCodeLength(artifact.GiftCardCodeLength)
+                    .SetGiftCardValidityTimeframe(artifact.GiftCardDaysValid)
+                    .SetGiftCardPropertyAliases(artifact.GiftCardPropertyAliases, SetBehavior.Merge)
+                    .SetGiftCardActivationMethod((GiftCardActivationMethod)artifact.GiftCardActivationMethod)
+                    .SetOrderEditorConfig(artifact.OrderEditorConfig)
+                    .SetSortOrder(artifact.SortOrder);
+    
+                if (artifact.CookieTimeout.HasValue)
+                {
+                    entity.EnableCookies(artifact.CookieTimeout.Value);
+                }
+                else
+                {
+                    entity.DisableCookies();
+                }
+
+                var userIds = artifact.AllowedUsers.Select(x => _userService.GetByUsername(x))
+                    .Where(x => x != null)
+                    .Select(x => x.Id.ToString(CultureInfo.InvariantCulture))
+                    .ToList();
+
+                entity.SetAllowedUsers(userIds, SetBehavior.Merge);
+
+                var userRoles = artifact.AllowedUserRoles.Select(x => _userService.GetUserGroupByAlias(x))
+                    .Where(x => x != null)
+                    .Select(x => x.Alias)
+                    .ToList();
+
+                entity.SetAllowedUserRoles(userRoles, SetBehavior.Merge);
+
+                _vendrApi.SaveStore(entity);
+
+                state.Entity = entity;
+
+                uow.Complete();
+            }
+        }
+
+        private void Pass3(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context)
+        {
+            using (var uow = _vendrApi.Uow.Create())
+            {
+                var artifact = state.Artifact;
+                var entity = state.Entity.AsWritable(uow);
+
+                // DefaultCountry
+                Guid? defaultCountryId = null;
+
+                if (artifact.DefaultCountryId != null)
+                {
+                    artifact.DefaultCountryId.EnsureType(VendrConstants.UdiEntityType.Country);
+
+                    defaultCountryId = _vendrApi.GetCountry(artifact.DefaultCountryId.Guid)?.Id;
+                }
+
+                entity.SetDefaultCountry(defaultCountryId);
+
+                // DefaultTaxClass
+                Guid? defaultTaxClassId = null;
+
+                if (artifact.DefaultTaxClassId != null)
+                {
+                    artifact.DefaultTaxClassId.EnsureType(VendrConstants.UdiEntityType.TaxClass);
+
+                    defaultTaxClassId = _vendrApi.GetTaxClass(artifact.DefaultTaxClassId.Guid)?.Id;
+                }
+
+                entity.SetDefaultTaxClass(defaultTaxClassId);
+
+                // DefaultOrderStatus
                 Guid? defaultOrderStatusId = null;
 
                 if (artifact.DefaultOrderStatusId != null)
@@ -241,6 +319,69 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 }
 
                 entity.SetDefaultOrderStatus(defaultOrderStatusId);
+
+                // ErrorOrderStatus
+                Guid? errorOrderStatusId = null;
+
+                if (artifact.ErrorOrderStatusId != null)
+                {
+                    artifact.ErrorOrderStatusId.EnsureType(VendrConstants.UdiEntityType.OrderStatus);
+
+                    errorOrderStatusId = _vendrApi.GetOrderStatus(artifact.ErrorOrderStatusId.Guid)?.Id;
+                }
+
+                entity.SetErrorOrderStatus(errorOrderStatusId);
+
+                // DefaultGiftCardEmailTemplate
+                Guid? defaultGiftCardEmailTemplateId = null;
+
+                if (artifact.DefaultGiftCardEmailTemplateId != null)
+                {
+                    artifact.DefaultGiftCardEmailTemplateId.EnsureType(VendrConstants.UdiEntityType.EmailTemplate);
+
+                    defaultGiftCardEmailTemplateId = _vendrApi.GetEmailTemplate(artifact.DefaultGiftCardEmailTemplateId.Guid)?.Id;
+                }
+
+                entity.SetDefaultGiftCardEmailTemplate(defaultGiftCardEmailTemplateId);
+
+                // ConfirmationEmailTemplate
+                Guid? confirmationEmailTemplateId = null;
+
+                if (artifact.ConfirmationEmailTemplateId != null)
+                {
+                    artifact.ConfirmationEmailTemplateId.EnsureType(VendrConstants.UdiEntityType.EmailTemplate);
+
+                    confirmationEmailTemplateId = _vendrApi.GetEmailTemplate(artifact.ConfirmationEmailTemplateId.Guid)?.Id;
+                }
+
+                entity.SetConfirmationEmailTemplate(confirmationEmailTemplateId);
+
+                // ErrorEmailTemplate
+                Guid? errorEmailTemplateId = null;
+
+                if (artifact.ErrorEmailTemplateId != null)
+                {
+                    artifact.ErrorEmailTemplateId.EnsureType(VendrConstants.UdiEntityType.EmailTemplate);
+
+                    errorEmailTemplateId = _vendrApi.GetEmailTemplate(artifact.ErrorEmailTemplateId.Guid)?.Id;
+                }
+
+                entity.SetErrorEmailTemplate(errorEmailTemplateId);
+
+                // StockSharingStore
+                Guid? stockSharingStore = null;
+
+                if (artifact.ShareStockFromStoreId != null)
+                {
+                    artifact.ShareStockFromStoreId.EnsureType(VendrConstants.UdiEntityType.Store);
+
+                    stockSharingStore = _vendrApi.GetStore(artifact.ShareStockFromStoreId.Guid)?.Id;
+                }
+
+                if (stockSharingStore.HasValue)
+                    entity.ShareStockFrom(stockSharingStore.Value);
+                else
+                    entity.StopSharingStock();
 
                 _vendrApi.SaveStore(entity);
 

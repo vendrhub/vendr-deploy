@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
 using Vendr.Core.Api;
@@ -179,9 +180,103 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var entity = state.Entity?.AsWritable(uow) ?? ShippingMethod.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.Alias, artifact.Name);
 
                 entity.SetName(artifact.Name, artifact.Alias)
+                    .SetSku(artifact.Sku)
+                    .SetImage(artifact.ImageId)
                     .SetSortOrder(artifact.SortOrder);
 
-                // TODO: Repopulate
+                // TaxClass
+                if (artifact.TaxClassId != null)
+                {
+                    artifact.TaxClassId.EnsureType(VendrConstants.UdiEntityType.TaxClass);
+                    // TODO: Check the payment method exists?
+                    entity.SetTaxClass(artifact.TaxClassId.Guid);
+                }
+                else
+                {
+                    entity.ClearTaxClass();
+                }
+
+                // Prices
+                var pricesToRemove = entity.Prices
+                    .Where(x => !artifact.Prices.Any(y => y.CountryId?.Guid == x.CountryId
+                        && y.RegionId?.Guid == x.RegionId
+                        && y.CurrencyId.Guid == x.CurrencyId))
+                    .ToList();
+
+                foreach (var price in artifact.Prices)
+                {
+                    price.CurrencyId.EnsureType(VendrConstants.UdiEntityType.Currency);
+
+                    if (price.CountryId == null && price.RegionId == null)
+                    {
+                        entity.SetDefaultPriceForCurrency(price.CurrencyId.Guid, price.Value);
+                    }
+                    else
+                    {
+                        price.CountryId.EnsureType(VendrConstants.UdiEntityType.Country);
+
+                        if (price.RegionId != null)
+                        {
+                            price.RegionId.EnsureType(VendrConstants.UdiEntityType.Region);
+
+                            entity.SetRegionPriceForCurrency(price.CountryId.Guid, price.RegionId.Guid, price.CurrencyId.Guid, price.Value);
+                        }
+                        else
+                        {
+                            entity.SetCountryPriceForCurrency(price.CountryId.Guid, price.CurrencyId.Guid, price.Value);
+                        }
+                    }
+                }
+
+                foreach (var price in pricesToRemove)
+                {
+                    if (price.CountryId == null && price.RegionId == null)
+                    {
+                        entity.ClearDefaultPriceForCurrency(price.CurrencyId);
+                    }
+                    else if (price.CountryId != null && price.RegionId == null)
+                    {
+                        entity.ClearCountryPriceForCurrency(price.CountryId.Value, price.CurrencyId);
+                    }
+                    else
+                    {
+                        entity.ClearRegionPriceForCurrency(price.CountryId.Value, price.RegionId.Value, price.CurrencyId);
+                    }
+                }
+
+                // AllowedCountryRegions
+                var allowedCountryRegionsToRemove = entity.AllowedCountryRegions
+                    .Where(x => !artifact.AllowedCountryRegions.Any(y => y.CountryId.Guid == x.CountryId
+                        && y.RegionId?.Guid == x.RegionId))
+                    .ToList();
+
+                foreach (var acr in artifact.AllowedCountryRegions)
+                {
+                    acr.CountryId.EnsureType(VendrConstants.UdiEntityType.Country);
+
+                    if (acr.RegionId != null)
+                    {
+                        acr.RegionId.EnsureType(VendrConstants.UdiEntityType.Region);
+
+                        entity.AllowInRegion(acr.CountryId.Guid, acr.RegionId.Guid);
+                    }
+                    else
+                    {
+                        entity.AllowInCountry(acr.CountryId.Guid);
+                    }
+                }
+
+                foreach (var acr in allowedCountryRegionsToRemove)
+                {
+                    if (acr.RegionId != null)
+                    {
+                        entity.DisallowInRegion(acr.CountryId, acr.RegionId.Value);
+                    }
+                    else
+                    {
+                        entity.DisallowInCountry(acr.CountryId);
+                    }
+                }
 
                 _vendrApi.SaveShippingMethod(entity);
 

@@ -127,22 +127,25 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 {
                     artifact.DefaultCurrencyId.EnsureType(VendrConstants.UdiEntityType.Currency);
                     // TODO: Check the currency exists?
-                    entity.SetDefaultCurrency(artifact.DefaultCurrencyId.Guid);
                 }
+
+                entity.SetDefaultCurrency(artifact.DefaultCurrencyId?.Guid);
 
                 if (artifact.DefaultPaymentMethodId != null)
                 {
                     artifact.DefaultPaymentMethodId.EnsureType(VendrConstants.UdiEntityType.PaymentMethod);
                     // TODO: Check the payment method exists?
-                    entity.SetDefaultPaymentMethod(artifact.DefaultPaymentMethodId.Guid);
                 }
+
+                entity.SetDefaultPaymentMethod(artifact.DefaultPaymentMethodId?.Guid);
 
                 if (artifact.DefaultShippingMethodId != null)
                 {
                     artifact.DefaultShippingMethodId.EnsureType(VendrConstants.UdiEntityType.ShippingMethod);
                     // TODO: Check the payment method exists?
-                    entity.SetDefaultShippingMethod(artifact.DefaultShippingMethodId.Guid);
                 }
+
+                entity.SetDefaultShippingMethod(artifact.DefaultShippingMethodId?.Guid);
 
                 _vendrApi.SaveCountry(entity);
 

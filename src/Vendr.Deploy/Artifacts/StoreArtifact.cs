@@ -53,9 +53,9 @@ namespace Vendr.Deploy.Artifacts
 
         public string OrderEditorConfig { get; set; }
 
-        public IEnumerable<StringUdi> AllowedUsers { get; set; }
+        public IEnumerable<string> AllowedUsers { get; set; }
 
-        public IEnumerable<GuidUdi> AllowedUserRoles { get; set; }
+        public IEnumerable<string> AllowedUserRoles { get; set; }
 
         public int SortOrder { get; set; }
     }
