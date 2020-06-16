@@ -21,15 +21,15 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 
 #### Restoring
 
-- [ ] Restore Stores
-- [ ] Restore Order Statuses
-- [ ] Restore Shipping Methods
-- [ ] Restore Payment Methods
-- [ ] Restore Countries
-- [ ] Restore Regions
-- [ ] Restore Currencies
-- [ ] Restore Tax Classes
-- [ ] Restore Email Templates
+- [x] Restore Stores
+- [x] Restore Order Statuses
+- [x] Restore Shipping Methods
+- [x] Restore Payment Methods
+- [x] Restore Countries
+- [x] Restore Regions
+- [x] Restore Currencies
+- [x] Restore Tax Classes
+- [x] Restore Email Templates
 
 ### Property Editors
 
@@ -37,3 +37,8 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 - [x] Store Entity Picker
 - [x] Price
 - [ ] Variants (future)
+
+### Issues to Resolve
+
+- [ ] Vendr entities not restoring on initial restore. Currently have to restore Umbraco, then Vendr
+- [ ] Issue where refreshing the restore screen throws an error that a store entity already exists
