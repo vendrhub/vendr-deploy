@@ -18,8 +18,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override int[] ProcessPasses => new [] 
         {
-            1,
-            4
+            1,4
         };
 
         public override string[] ValidOpenSelectors => new []
