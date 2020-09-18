@@ -40,5 +40,5 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 
 ### Issues to Resolve
 
-- [ ] Vendr entities not restoring on initial restore. Currently have to restore Umbraco, then Vendr
+- [x] Vendr entities not restoring on initial restore. Currently have to restore Umbraco, then Vendr
 - [x] Issue where refreshing the restore screen throws an error that a store entity already exists
