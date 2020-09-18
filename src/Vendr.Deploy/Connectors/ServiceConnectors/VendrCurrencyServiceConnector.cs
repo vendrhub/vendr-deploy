@@ -49,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcateDependency(storeUdi)
+                new VendrArtifcatDependency(storeUdi)
             };
 
             var artifcat = new CurrencyArtifact(udi, storeUdi, dependencies)
@@ -69,11 +69,11 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 foreach (var allowedCountry in entity.AllowedCountries)
                 {
                     var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, allowedCountry.CountryId);
-                    var countryDep = new VendrArtifcateDependency(countryDepUdi);
+                    var countryDep = new VendrArtifcatDependency(countryDepUdi);
 
                     dependencies.Add(countryDep);
 
-                    allowedCountryArtifacts.Add(new AllowedCountryArtifact { CountryId = countryDepUdi });
+                    allowedCountryArtifacts.Add(new AllowedCountryArtifact { CountryUdi = countryDepUdi });
                 }
 
                 artifcat.AllowedCountries = allowedCountryArtifacts;
@@ -106,9 +106,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var artifact = state.Artifact;
 
                 artifact.Udi.EnsureType(VendrConstants.UdiEntityType.Currency);
-                artifact.StoreId.EnsureType(VendrConstants.UdiEntityType.Store);
+                artifact.StoreUdi.EnsureType(VendrConstants.UdiEntityType.Store);
 
-                var entity = state.Entity?.AsWritable(uow) ?? Currency.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.Code, artifact.Name, artifact.CultureName);
+                var entity = state.Entity?.AsWritable(uow) ?? Currency.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Code, artifact.Name, artifact.CultureName);
 
                 entity.SetName(artifact.Name)
                     .SetCode(artifact.Code)
@@ -132,14 +132,17 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var entity = state.Entity.AsWritable(uow);
 
                 var allowedCountriesToRemove = entity.AllowedCountries
-                    .Where(x => !artifact.AllowedCountries.Any(y => y.CountryId.Guid == x.CountryId))
+                    .Where(x => artifact.AllowedCountries == null || !artifact.AllowedCountries.Any(y => y.CountryUdi.Guid == x.CountryId))
                     .ToList();
 
-                foreach (var ac in artifact.AllowedCountries)
+                if (artifact.AllowedCountries != null)
                 {
-                    ac.CountryId.EnsureType(VendrConstants.UdiEntityType.Country);
+                    foreach (var ac in artifact.AllowedCountries)
+                    {
+                        ac.CountryUdi.EnsureType(VendrConstants.UdiEntityType.Country);
 
-                    entity.AllowInCountry(ac.CountryId.Guid);
+                        entity.AllowInCountry(ac.CountryUdi.Guid);
+                    }
                 }
 
                 foreach (var ac in allowedCountriesToRemove)

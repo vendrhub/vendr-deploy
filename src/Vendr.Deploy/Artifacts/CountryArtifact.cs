@@ -17,9 +17,9 @@ namespace Vendr.Deploy.Artifacts
             get => Code;
         }
 
-        public GuidUdi DefaultCurrencyId { get; set; }
-        public GuidUdi DefaultPaymentMethodId { get; set; }
-        public GuidUdi DefaultShippingMethodId { get; set; }
+        public GuidUdi DefaultCurrencyUdi { get; set; }
+        public GuidUdi DefaultPaymentMethodUdi { get; set; }
+        public GuidUdi DefaultShippingMethodUdi { get; set; }
         public int SortOrder { get; set; }
     }
 }

@@ -48,7 +48,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcateDependency(storeUdi)
+                new VendrArtifcatDependency(storeUdi)
             };
 
             var artifcat = new CountryArtifact(udi, storeUdi, dependencies)
@@ -62,33 +62,33 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.DefaultCurrencyId != null)
             {
                 var currencyDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Currency, entity.DefaultCurrencyId.Value);
-                var currencyDep = new VendrArtifcateDependency(currencyDepUdi);
+                var currencyDep = new VendrArtifcatDependency(currencyDepUdi);
                 
                 dependencies.Add(currencyDep);
 
-                artifcat.DefaultCurrencyId = currencyDepUdi;
+                artifcat.DefaultCurrencyUdi = currencyDepUdi;
             }
 
             // Default payment method
             if (entity.DefaultPaymentMethodId != null)
             {
                 var pmDepUdi = new GuidUdi(VendrConstants.UdiEntityType.PaymentMethod, entity.DefaultPaymentMethodId.Value);
-                var pmDep = new VendrArtifcateDependency(pmDepUdi);
+                var pmDep = new VendrArtifcatDependency(pmDepUdi);
 
                 dependencies.Add(pmDep);
 
-                artifcat.DefaultPaymentMethodId = pmDepUdi;
+                artifcat.DefaultPaymentMethodUdi = pmDepUdi;
             }
 
             // Default shipping method
             if (entity.DefaultShippingMethodId != null)
             {
                 var smDepUdi = new GuidUdi(VendrConstants.UdiEntityType.ShippingMethod, entity.DefaultShippingMethodId.Value);
-                var smDep = new VendrArtifcateDependency(smDepUdi);
+                var smDep = new VendrArtifcatDependency(smDepUdi);
 
                 dependencies.Add(smDep);
 
-                artifcat.DefaultShippingMethodId = smDepUdi;
+                artifcat.DefaultShippingMethodUdi = smDepUdi;
             }
 
             return artifcat;
@@ -118,9 +118,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var artifact = state.Artifact;
 
                 artifact.Udi.EnsureType(VendrConstants.UdiEntityType.Country);
-                artifact.StoreId.EnsureType(VendrConstants.UdiEntityType.Store);
+                artifact.StoreUdi.EnsureType(VendrConstants.UdiEntityType.Store);
 
-                var entity = state.Entity?.AsWritable(uow) ?? Country.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.Code, artifact.Name);
+                var entity = state.Entity?.AsWritable(uow) ?? Country.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Code, artifact.Name);
 
                 entity.SetName(artifact.Name)
                     .SetCode(artifact.Code)
@@ -141,29 +141,29 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var artifact = state.Artifact;
                 var entity = state.Entity.AsWritable(uow);
 
-                if (artifact.DefaultCurrencyId != null)
+                if (artifact.DefaultCurrencyUdi != null)
                 {
-                    artifact.DefaultCurrencyId.EnsureType(VendrConstants.UdiEntityType.Currency);
+                    artifact.DefaultCurrencyUdi.EnsureType(VendrConstants.UdiEntityType.Currency);
                     // TODO: Check the currency exists?
                 }
 
-                entity.SetDefaultCurrency(artifact.DefaultCurrencyId?.Guid);
+                entity.SetDefaultCurrency(artifact.DefaultCurrencyUdi?.Guid);
 
-                if (artifact.DefaultPaymentMethodId != null)
+                if (artifact.DefaultPaymentMethodUdi != null)
                 {
-                    artifact.DefaultPaymentMethodId.EnsureType(VendrConstants.UdiEntityType.PaymentMethod);
+                    artifact.DefaultPaymentMethodUdi.EnsureType(VendrConstants.UdiEntityType.PaymentMethod);
                     // TODO: Check the payment method exists?
                 }
 
-                entity.SetDefaultPaymentMethod(artifact.DefaultPaymentMethodId?.Guid);
+                entity.SetDefaultPaymentMethod(artifact.DefaultPaymentMethodUdi?.Guid);
 
-                if (artifact.DefaultShippingMethodId != null)
+                if (artifact.DefaultShippingMethodUdi != null)
                 {
-                    artifact.DefaultShippingMethodId.EnsureType(VendrConstants.UdiEntityType.ShippingMethod);
+                    artifact.DefaultShippingMethodUdi.EnsureType(VendrConstants.UdiEntityType.ShippingMethod);
                     // TODO: Check the payment method exists?
                 }
 
-                entity.SetDefaultShippingMethod(artifact.DefaultShippingMethodId?.Guid);
+                entity.SetDefaultShippingMethod(artifact.DefaultShippingMethodUdi?.Guid);
 
                 _vendrApi.SaveCountry(entity);
 

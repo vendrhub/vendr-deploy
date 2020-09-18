@@ -49,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcateDependency(storeUdi)
+                new VendrArtifcatDependency(storeUdi)
             };
 
             var artifcat = new RegionArtifact(udi, storeUdi, countryUdi, dependencies)
@@ -63,22 +63,22 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.DefaultPaymentMethodId != null)
             {
                 var pmDepUdi = new GuidUdi(VendrConstants.UdiEntityType.PaymentMethod, entity.DefaultPaymentMethodId.Value);
-                var pmDep = new VendrArtifcateDependency(pmDepUdi);
+                var pmDep = new VendrArtifcatDependency(pmDepUdi);
 
                 dependencies.Add(pmDep);
 
-                artifcat.DefaultPaymentMethodId = pmDepUdi;
+                artifcat.DefaultPaymentMethodUdi = pmDepUdi;
             }
 
             // Default shipping method
             if (entity.DefaultShippingMethodId != null)
             {
                 var smDepUdi = new GuidUdi(VendrConstants.UdiEntityType.ShippingMethod, entity.DefaultShippingMethodId.Value);
-                var smDep = new VendrArtifcateDependency(smDepUdi);
+                var smDep = new VendrArtifcatDependency(smDepUdi);
 
                 dependencies.Add(smDep);
 
-                artifcat.DefaultShippingMethodId = smDepUdi;
+                artifcat.DefaultShippingMethodUdi = smDepUdi;
             }
 
             return artifcat;
@@ -108,10 +108,10 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var artifact = state.Artifact;
 
                 artifact.Udi.EnsureType(VendrConstants.UdiEntityType.Region);
-                artifact.StoreId.EnsureType(VendrConstants.UdiEntityType.Store);
-                artifact.CountryId.EnsureType(VendrConstants.UdiEntityType.Country);
+                artifact.StoreUdi.EnsureType(VendrConstants.UdiEntityType.Store);
+                artifact.CountryUdi.EnsureType(VendrConstants.UdiEntityType.Country);
 
-                var entity = state.Entity?.AsWritable(uow) ?? Region.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.CountryId.Guid, artifact.Code, artifact.Name);
+                var entity = state.Entity?.AsWritable(uow) ?? Region.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.CountryUdi.Guid, artifact.Code, artifact.Name);
 
                 entity.SetName(artifact.Name)
                     .SetCode(artifact.Code)
@@ -132,21 +132,21 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var artifact = state.Artifact;
                 var entity = state.Entity.AsWritable(uow);
 
-                if (artifact.DefaultPaymentMethodId != null)
+                if (artifact.DefaultPaymentMethodUdi != null)
                 {
-                    artifact.DefaultPaymentMethodId.EnsureType(VendrConstants.UdiEntityType.PaymentMethod);
+                    artifact.DefaultPaymentMethodUdi.EnsureType(VendrConstants.UdiEntityType.PaymentMethod);
                     // TODO: Check the payment method exists?
                 }
 
-                entity.SetDefaultPaymentMethod(artifact.DefaultPaymentMethodId?.Guid);
+                entity.SetDefaultPaymentMethod(artifact.DefaultPaymentMethodUdi?.Guid);
 
-                if (artifact.DefaultShippingMethodId != null)
+                if (artifact.DefaultShippingMethodUdi != null)
                 {
-                    artifact.DefaultShippingMethodId.EnsureType(VendrConstants.UdiEntityType.ShippingMethod);
+                    artifact.DefaultShippingMethodUdi.EnsureType(VendrConstants.UdiEntityType.ShippingMethod);
                     // TODO: Check the payment method exists?
                 }
 
-                entity.SetDefaultShippingMethod(artifact.DefaultShippingMethodId?.Guid);
+                entity.SetDefaultShippingMethod(artifact.DefaultShippingMethodUdi?.Guid);
 
                 _vendrApi.SaveRegion(entity);
 

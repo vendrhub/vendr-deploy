@@ -49,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcateDependency(storeUdi)
+                new VendrArtifcatDependency(storeUdi)
             };
 
             var artifcat = new TaxClassArtifact(udi, storeUdi, dependencies)
@@ -71,18 +71,18 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 };
 
                 var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
-                var countryDep = new VendrArtifcateDependency(countryDepUdi);
+                var countryDep = new VendrArtifcatDependency(countryDepUdi);
                 dependencies.Add(countryDep);
 
-                crtrArtifact.CountryId = countryDepUdi;
+                crtrArtifact.CountryUdi = countryDepUdi;
 
                 if (countryRegionTaxRate.RegionId.HasValue)
                 {
                     var regionDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
-                    var regionDep = new VendrArtifcateDependency(regionDepUdi);
+                    var regionDep = new VendrArtifcatDependency(regionDepUdi);
                     dependencies.Add(regionDep);
 
-                    crtrArtifact.RegionId = regionDepUdi;
+                    crtrArtifact.RegionUdi = regionDepUdi;
                 }
 
                 countryRegionTaxRateArtifacts.Add(crtrArtifact);
@@ -117,9 +117,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var artifact = state.Artifact;
 
                 artifact.Udi.EnsureType(VendrConstants.UdiEntityType.TaxClass);
-                artifact.StoreId.EnsureType(VendrConstants.UdiEntityType.Store);
+                artifact.StoreUdi.EnsureType(VendrConstants.UdiEntityType.Store);
 
-                var entity = state.Entity?.AsWritable(uow) ?? TaxClass.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.Alias, artifact.Name, artifact.DefaultTaxRate);
+                var entity = state.Entity?.AsWritable(uow) ?? TaxClass.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Alias, artifact.Name, artifact.DefaultTaxRate);
 
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetDefaultTaxRate(artifact.DefaultTaxRate)
@@ -144,22 +144,25 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 // given we are using guids, the likelyhood of a matching guid
                 // being for a different entity type are pretty slim
                 var countryRegionTaxRatesToRemove = entity.CountryRegionTaxRates
-                    .Where(x => !artifact.CountryRegionTaxRates.Any(y => y.CountryId.Guid == x.CountryId && y.RegionId?.Guid == x.RegionId))
+                    .Where(x => artifact.CountryRegionTaxRates == null || !artifact.CountryRegionTaxRates.Any(y => y.CountryUdi.Guid == x.CountryId && y.RegionUdi?.Guid == x.RegionId))
                     .ToList();
 
-                foreach (var crtr in artifact.CountryRegionTaxRates)
+                if (artifact.CountryRegionTaxRates != null)
                 {
-                    crtr.CountryId.EnsureType(VendrConstants.UdiEntityType.Country);
-
-                    if (crtr.RegionId == null)
+                    foreach (var crtr in artifact.CountryRegionTaxRates)
                     {
-                        entity.SetCountryTaxRate(crtr.CountryId.Guid, crtr.TaxRate);
-                    }
-                    else
-                    {
-                        crtr.RegionId.EnsureType(VendrConstants.UdiEntityType.Region);
+                        crtr.CountryUdi.EnsureType(VendrConstants.UdiEntityType.Country);
 
-                        entity.SetRegionTaxRate(crtr.CountryId.Guid, crtr.RegionId.Guid, crtr.TaxRate);
+                        if (crtr.RegionUdi == null)
+                        {
+                            entity.SetCountryTaxRate(crtr.CountryUdi.Guid, crtr.TaxRate);
+                        }
+                        else
+                        {
+                            crtr.RegionUdi.EnsureType(VendrConstants.UdiEntityType.Region);
+
+                            entity.SetRegionTaxRate(crtr.CountryUdi.Guid, crtr.RegionUdi.Guid, crtr.TaxRate);
+                        }
                     }
                 }
 

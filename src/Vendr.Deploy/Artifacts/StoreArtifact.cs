@@ -12,13 +12,15 @@ namespace Vendr.Deploy.Artifacts
             : base(udi, dependencies)
         { }
 
-        public GuidUdi DefaultCountryId { get; set; }
+        public GuidUdi BaseCurrencyUdi { get; set; }
 
-        public GuidUdi DefaultTaxClassId { get; set; }
+        public GuidUdi DefaultCountryUdi { get; set; }
 
-        public GuidUdi DefaultOrderStatusId { get; set; }
+        public GuidUdi DefaultTaxClassUdi { get; set; }
 
-        public GuidUdi ErrorOrderStatusId { get; set; }
+        public GuidUdi DefaultOrderStatusUdi { get; set; }
+
+        public GuidUdi ErrorOrderStatusUdi { get; set; }
 
         public bool PricesIncludeTax { get; set; }
 
@@ -32,7 +34,7 @@ namespace Vendr.Deploy.Artifacts
 
         public IEnumerable<string> ProductUniquenessPropertyAliases { get; set; }
 
-        public GuidUdi ShareStockFromStoreId { get; set; }
+        public GuidUdi ShareStockFromStoreUdi { get; set; }
 
         public int GiftCardCodeLength { get; set; }
 
@@ -44,12 +46,12 @@ namespace Vendr.Deploy.Artifacts
 
         public int GiftCardActivationMethod  { get; set; }
 
-        public GuidUdi GiftCardActivationOrderStatusId { get; set; }
+        public GuidUdi GiftCardActivationOrderStatusUdi { get; set; }
 
-        public GuidUdi DefaultGiftCardEmailTemplateId { get; set; }
+        public GuidUdi DefaultGiftCardEmailTemplateUdi { get; set; }
 
-        public GuidUdi ConfirmationEmailTemplateId { get; set; }
-        public GuidUdi ErrorEmailTemplateId { get; set; }
+        public GuidUdi ConfirmationEmailTemplateUdi { get; set; }
+        public GuidUdi ErrorEmailTemplateUdi { get; set; }
 
         public string OrderEditorConfig { get; set; }
 

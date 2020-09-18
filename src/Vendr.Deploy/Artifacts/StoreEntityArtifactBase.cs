@@ -7,12 +7,12 @@ namespace Vendr.Deploy.Artifacts
 {
     public abstract class StoreEntityArtifactBase : DeployArtifactBase<GuidUdi>
     {
-        public StoreEntityArtifactBase(GuidUdi udi, GuidUdi storeUdi, IEnumerable<ArtifactDependency> dependencies = null)
+        protected StoreEntityArtifactBase(GuidUdi udi, GuidUdi storeUdi, IEnumerable<ArtifactDependency> dependencies = null)
             : base(udi, dependencies)
         {
-            StoreId = storeUdi;
+            StoreUdi = storeUdi;
         }
 
-        public GuidUdi StoreId { get; set; }
+        public GuidUdi StoreUdi { get; set; }
     }
 }

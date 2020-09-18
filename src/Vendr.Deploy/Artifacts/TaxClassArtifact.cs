@@ -19,9 +19,9 @@ namespace Vendr.Deploy.Artifacts
 
     public class CountryRegionTaxRateArtifact
     {
-        public GuidUdi CountryId { get; set; }
+        public GuidUdi CountryUdi { get; set; }
 
-        public GuidUdi RegionId { get; set; }
+        public GuidUdi RegionUdi { get; set; }
 
         public decimal TaxRate { get; set; }
     }

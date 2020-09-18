@@ -4,6 +4,6 @@ namespace Vendr.Deploy.Artifacts
 {
     public class AllowedCountryRegionArtifact: AllowedCountryArtifact
     {
-        public GuidUdi RegionId { get; set; }
+        public GuidUdi RegionUdi { get; set; }
     }
 }

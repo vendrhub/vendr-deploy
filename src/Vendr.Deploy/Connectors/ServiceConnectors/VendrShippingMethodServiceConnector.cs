@@ -49,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcateDependency(storeUdi)
+                new VendrArtifcatDependency(storeUdi)
             };
 
             var artifcat = new ShippingMethodArtifact(udi, storeUdi, dependencies)
@@ -65,11 +65,11 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.TaxClassId != null)
             {
                 var taxClassDepUdi = new GuidUdi(VendrConstants.UdiEntityType.TaxClass, entity.TaxClassId.Value);
-                var taxClassDep = new VendrArtifcateDependency(taxClassDepUdi);
+                var taxClassDep = new VendrArtifcatDependency(taxClassDepUdi);
                 
                 dependencies.Add(taxClassDep);
 
-                artifcat.TaxClassId = taxClassDepUdi;
+                artifcat.TaxClassUdi = taxClassDepUdi;
             }
 
             // Service prices
@@ -83,32 +83,32 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                     // Currency
                     var currencyDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Currency, price.CurrencyId);
-                    var currencyDep = new VendrArtifcateDependency(currencyDepUdi);
+                    var currencyDep = new VendrArtifcatDependency(currencyDepUdi);
 
                     dependencies.Add(currencyDep);
 
-                    spArtifact.CurrencyId = currencyDepUdi;
+                    spArtifact.CurrencyUdi = currencyDepUdi;
 
                     // Country
                     if (price.CountryId.HasValue)
                     {
                         var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, price.CountryId.Value);
-                        var countryDep = new VendrArtifcateDependency(countryDepUdi);
+                        var countryDep = new VendrArtifcatDependency(countryDepUdi);
 
                         dependencies.Add(countryDep);
 
-                        spArtifact.CountryId = countryDepUdi;
+                        spArtifact.CountryUdi = countryDepUdi;
                     }
 
                     // Region
                     if (price.RegionId.HasValue)
                     {
                         var regionDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Region, price.RegionId.Value);
-                        var regionDep = new VendrArtifcateDependency(regionDepUdi);
+                        var regionDep = new VendrArtifcatDependency(regionDepUdi);
 
                         dependencies.Add(regionDep);
 
-                        spArtifact.RegionId = regionDepUdi;
+                        spArtifact.RegionUdi = regionDepUdi;
                     }
 
                     servicesPrices.Add(spArtifact);
@@ -128,21 +128,21 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                     // Country
                     var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, acr.CountryId);
-                    var countryDep = new VendrArtifcateDependency(countryDepUdi);
+                    var countryDep = new VendrArtifcatDependency(countryDepUdi);
 
                     dependencies.Add(countryDep);
 
-                    acrArtifact.CountryId = countryDepUdi;
+                    acrArtifact.CountryUdi = countryDepUdi;
 
                     // Region
                     if (acr.RegionId.HasValue)
                     {
                         var regionDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Region, acr.RegionId.Value);
-                        var regionDep = new VendrArtifcateDependency(regionDepUdi);
+                        var regionDep = new VendrArtifcatDependency(regionDepUdi);
 
                         dependencies.Add(regionDep);
 
-                        acrArtifact.RegionId = regionDepUdi;
+                        acrArtifact.RegionUdi = regionDepUdi;
                     }
 
                     allowedCountryRegions.Add(acrArtifact);
@@ -178,9 +178,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var artifact = state.Artifact;
 
                 artifact.Udi.EnsureType(VendrConstants.UdiEntityType.ShippingMethod);
-                artifact.StoreId.EnsureType(VendrConstants.UdiEntityType.Store);
+                artifact.StoreUdi.EnsureType(VendrConstants.UdiEntityType.Store);
 
-                var entity = state.Entity?.AsWritable(uow) ?? ShippingMethod.Create(uow, artifact.Udi.Guid, artifact.StoreId.Guid, artifact.Alias, artifact.Name);
+                var entity = state.Entity?.AsWritable(uow) ?? ShippingMethod.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Alias, artifact.Name);
 
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetSku(artifact.Sku)
@@ -203,11 +203,11 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var entity = state.Entity.AsWritable(uow);
 
                 // TaxClass
-                if (artifact.TaxClassId != null)
+                if (artifact.TaxClassUdi != null)
                 {
-                    artifact.TaxClassId.EnsureType(VendrConstants.UdiEntityType.TaxClass);
+                    artifact.TaxClassUdi.EnsureType(VendrConstants.UdiEntityType.TaxClass);
                     // TODO: Check the payment method exists?
-                    entity.SetTaxClass(artifact.TaxClassId.Guid);
+                    entity.SetTaxClass(artifact.TaxClassUdi.Guid);
                 }
                 else
                 {
@@ -216,34 +216,34 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 // Prices
                 var pricesToRemove = entity.Prices
-                    .Where(x => !artifact.Prices.Any(y => y.CountryId?.Guid == x.CountryId
-                        && y.RegionId?.Guid == x.RegionId
-                        && y.CurrencyId.Guid == x.CurrencyId))
+                    .Where(x => artifact.Prices == null || !artifact.Prices.Any(y => y.CountryUdi?.Guid == x.CountryId
+                        && y.RegionUdi?.Guid == x.RegionId
+                        && y.CurrencyUdi.Guid == x.CurrencyId))
                     .ToList();
 
                 if (artifact.Prices != null)
                 {
                     foreach (var price in artifact.Prices)
                     {
-                        price.CurrencyId.EnsureType(VendrConstants.UdiEntityType.Currency);
+                        price.CurrencyUdi.EnsureType(VendrConstants.UdiEntityType.Currency);
 
-                        if (price.CountryId == null && price.RegionId == null)
+                        if (price.CountryUdi == null && price.RegionUdi == null)
                         {
-                            entity.SetDefaultPriceForCurrency(price.CurrencyId.Guid, price.Value);
+                            entity.SetDefaultPriceForCurrency(price.CurrencyUdi.Guid, price.Value);
                         }
                         else
                         {
-                            price.CountryId.EnsureType(VendrConstants.UdiEntityType.Country);
+                            price.CountryUdi.EnsureType(VendrConstants.UdiEntityType.Country);
 
-                            if (price.RegionId != null)
+                            if (price.RegionUdi != null)
                             {
-                                price.RegionId.EnsureType(VendrConstants.UdiEntityType.Region);
+                                price.RegionUdi.EnsureType(VendrConstants.UdiEntityType.Region);
 
-                                entity.SetRegionPriceForCurrency(price.CountryId.Guid, price.RegionId.Guid, price.CurrencyId.Guid, price.Value);
+                                entity.SetRegionPriceForCurrency(price.CountryUdi.Guid, price.RegionUdi.Guid, price.CurrencyUdi.Guid, price.Value);
                             }
                             else
                             {
-                                entity.SetCountryPriceForCurrency(price.CountryId.Guid, price.CurrencyId.Guid, price.Value);
+                                entity.SetCountryPriceForCurrency(price.CountryUdi.Guid, price.CurrencyUdi.Guid, price.Value);
                             }
                         }
                     }
@@ -267,25 +267,25 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 // AllowedCountryRegions
                 var allowedCountryRegionsToRemove = entity.AllowedCountryRegions
-                    .Where(x => !artifact.AllowedCountryRegions.Any(y => y.CountryId.Guid == x.CountryId
-                        && y.RegionId?.Guid == x.RegionId))
+                    .Where(x => artifact.AllowedCountryRegions == null || !artifact.AllowedCountryRegions.Any(y => y.CountryUdi.Guid == x.CountryId
+                        && y.RegionUdi?.Guid == x.RegionId))
                     .ToList();
 
                 if (artifact.AllowedCountryRegions != null)
                 {
                     foreach (var acr in artifact.AllowedCountryRegions)
                     {
-                        acr.CountryId.EnsureType(VendrConstants.UdiEntityType.Country);
+                        acr.CountryUdi.EnsureType(VendrConstants.UdiEntityType.Country);
 
-                        if (acr.RegionId != null)
+                        if (acr.RegionUdi != null)
                         {
-                            acr.RegionId.EnsureType(VendrConstants.UdiEntityType.Region);
+                            acr.RegionUdi.EnsureType(VendrConstants.UdiEntityType.Region);
 
-                            entity.AllowInRegion(acr.CountryId.Guid, acr.RegionId.Guid);
+                            entity.AllowInRegion(acr.CountryUdi.Guid, acr.RegionUdi.Guid);
                         }
                         else
                         {
-                            entity.AllowInCountry(acr.CountryId.Guid);
+                            entity.AllowInCountry(acr.CountryUdi.Guid);
                         }
                     }
                 }

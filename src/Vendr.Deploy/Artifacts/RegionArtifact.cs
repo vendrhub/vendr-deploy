@@ -6,10 +6,10 @@ namespace Vendr.Deploy.Artifacts
 {
     public class RegionArtifact : StoreEntityArtifactBase
     {
-        public RegionArtifact(GuidUdi udi, GuidUdi storeUdi, GuidUdi countryId, IEnumerable<ArtifactDependency> dependencies = null)
+        public RegionArtifact(GuidUdi udi, GuidUdi storeUdi, GuidUdi countryUdi, IEnumerable<ArtifactDependency> dependencies = null)
             : base(udi, storeUdi, dependencies)
         {
-            CountryId = countryId;
+            CountryUdi = countryUdi;
         }
 
         public string Code { get; set; }
@@ -19,9 +19,9 @@ namespace Vendr.Deploy.Artifacts
             get => Code;
         }
 
-        public GuidUdi CountryId { get; set; }
-        public GuidUdi DefaultPaymentMethodId { get; set; }
-        public GuidUdi DefaultShippingMethodId { get; set; }
+        public GuidUdi CountryUdi { get; set; }
+        public GuidUdi DefaultPaymentMethodUdi { get; set; }
+        public GuidUdi DefaultShippingMethodUdi { get; set; }
         public int SortOrder { get; set; }
     }
 }

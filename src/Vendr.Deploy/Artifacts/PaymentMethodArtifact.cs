@@ -11,7 +11,7 @@ namespace Vendr.Deploy.Artifacts
         { }
 
         public string Sku { get; set; }
-        public GuidUdi TaxClassId { get; set; }
+        public GuidUdi TaxClassUdi { get; set; }
         public IEnumerable<ServicePriceArtifact> Prices { get; set; }
         public string ImageId { get; set; }
 

@@ -4,9 +4,9 @@ namespace Vendr.Deploy.Artifacts
 {
     public class ServicePriceArtifact
     {
-        public GuidUdi CurrencyId { get; set; }
-        public GuidUdi CountryId { get; set; }
-        public GuidUdi RegionId { get; set; }
+        public GuidUdi CurrencyUdi { get; set; }
+        public GuidUdi CountryUdi { get; set; }
+        public GuidUdi RegionUdi { get; set; }
         public decimal Value { get; set; }
     }
 }
