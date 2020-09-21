@@ -4,7 +4,7 @@
     <!-- RESTORE NUGET PACKAGES -->
     <Target Name="RestoreNugetPackages">
         <Exec WorkingDirectory="@(SolutionFile->'%(RootDir)%(Directory)')" 
-            Command="$(BuildToolsDir)\nuget\nuget.exe restore @(SolutionFile->'%(Filename)%(Extension)') --configfile @(SolutionFile->'%(RootDir)%(Directory)')NuGet.config"/>
+            Command="$(BuildToolsDir)\nuget\nuget.exe restore @(SolutionFile->'%(Filename)%(Extension)')"/>
     </Target>
 
 	<!-- UPDATE PROJECT ASSEMBLEY VERSION -->
