@@ -1,9 +1,9 @@
-# vendr-deploy
+# Vendr Deploy
 Umbraco Deploy resolvers for Vendr, the eCommerce solution for Umbraco v8+
 
 Current primary focus is on syncing store settings, not orders, discounts or gift cards. Discounts and Gift Cards may come later, but right now it's just getting the store settings to work.
 
-## TODO
+## Implemented
 
 ### Settings
 
@@ -37,8 +37,3 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 - [x] Store Entity Picker
 - [x] Price
 - [ ] Variants (future)
-
-### Issues to Resolve
-
-- [x] Vendr entities not restoring on initial restore. Currently have to restore Umbraco, then Vendr
-- [x] Issue where refreshing the restore screen throws an error that a store entity already exists
