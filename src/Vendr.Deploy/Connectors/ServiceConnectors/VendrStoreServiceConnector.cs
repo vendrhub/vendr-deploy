@@ -214,8 +214,6 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 
         public override void Process(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context, int pass)
         {
-            // TODO: NEED TO DO MULTI PASSES FOR INNER ENTITIES
-
             state.NextPass = GetNextPass(ProcessPasses, pass);
 
             switch (pass)
