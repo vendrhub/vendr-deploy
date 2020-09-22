@@ -191,7 +191,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetSku(artifact.Sku)
                     .SetImage(artifact.ImageId)
-                    .SetSettings(artifact.PaymentProviderSettings, SetBehavior.Merge)
+                    .SetSettings(artifact.PaymentProviderSettings, SetBehavior.Replace)
                     .ToggleFeatures(artifact.CanFetchPaymentStatuses, artifact.CanCapturePayments, artifact.CanCancelPayments, artifact.CanRefundPayments)
                     .SetSortOrder(artifact.SortOrder);
 

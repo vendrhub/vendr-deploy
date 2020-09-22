@@ -246,12 +246,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     .SetPriceTaxInclusivity(artifact.PricesIncludeTax)
                     .SetCartNumberTemplate(artifact.CartNumberTemplate)
                     .SetOrderNumberTemplate(artifact.OrderNumberTemplate)
-                    .SetProductPropertyAliases(artifact.ProductPropertyAliases, SetBehavior.Merge)
-                    .SetProductUniquenessPropertyAliases(artifact.ProductUniquenessPropertyAliases, SetBehavior.Merge)
+                    .SetProductPropertyAliases(artifact.ProductPropertyAliases, SetBehavior.Replace)
+                    .SetProductUniquenessPropertyAliases(artifact.ProductUniquenessPropertyAliases, SetBehavior.Replace)
                     .SetGiftCardCodeLength(artifact.GiftCardCodeLength)
                     .SetGiftCardCodeTemplate(artifact.GiftCardCodeTemplate)
                     .SetGiftCardValidityTimeframe(artifact.GiftCardDaysValid)
-                    .SetGiftCardPropertyAliases(artifact.GiftCardPropertyAliases, SetBehavior.Merge)
+                    .SetGiftCardPropertyAliases(artifact.GiftCardPropertyAliases, SetBehavior.Replace)
                     .SetGiftCardActivationMethod((GiftCardActivationMethod)artifact.GiftCardActivationMethod)
                     .SetOrderEditorConfig(artifact.OrderEditorConfig)
                     .SetSortOrder(artifact.SortOrder);
@@ -272,7 +272,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                         .Select(x => x.Id.ToString(CultureInfo.InvariantCulture))
                         .ToList();
 
-                    entity.SetAllowedUsers(userIds, SetBehavior.Merge);
+                    entity.SetAllowedUsers(userIds, SetBehavior.Replace);
                 }
 
                 if (artifact.AllowedUserRoles != null && artifact.AllowedUserRoles.Any())
@@ -282,7 +282,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                         .Select(x => x.Alias)
                         .ToList();
 
-                    entity.SetAllowedUserRoles(userRoles, SetBehavior.Merge);
+                    entity.SetAllowedUserRoles(userRoles, SetBehavior.Replace);
                 }
 
                 _vendrApi.SaveStore(entity);
