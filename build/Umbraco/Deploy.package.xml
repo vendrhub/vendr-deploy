@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<umbPackage>
+    
+    <info>
+        <package>
+            <name>Vendr.Deploy</name>
+            <version>0.0.0</version>
+            <license url="https://opensource.org/licenses/MIT">MIT</license>
+            <url>https://vendr.net/add-ons/vendr-deploy</url>
+            <iconUrl>https://raw.githubusercontent.com/vendrhub/vendr/main/assets/logo-green-520.png</iconUrl>
+            <requirements>
+                <major>8</major>
+                <minor>2</minor>
+                <patch>0</patch>
+            </requirements>
+        </package>
+        <author>
+            <name>Outfield Digital Ltd</name>
+            <website>https://outfield.digital</website>
+        </author>
+        <readme>Umbraco Deploy resolvers for Vendr, the eCommerce solution for Umbraco v8+</readme>
+    </info>
+    
+    <DocumentTypes></DocumentTypes>
+    <Templates></Templates>
+    <Stylesheets></Stylesheets>
+    <Macros></Macros>
+    <DictionaryItems></DictionaryItems>
+    <Languages></Languages>
+    <DataTypes></DataTypes>
+    <Actions></Actions>
+    <control></control>
+
+    <files></files>
+    
+</umbPackage>
