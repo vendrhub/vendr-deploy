@@ -62,6 +62,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 ToAddresses = entity.ToAddresses,
                 CcAddresses = entity.CcAddresses,
                 BccAddresses = entity.BccAddresses,
+                SendToCustomer = entity.SendToCustomer,
                 TemplateView = entity.TemplateView,
                 SortOrder = entity.SortOrder
             };
