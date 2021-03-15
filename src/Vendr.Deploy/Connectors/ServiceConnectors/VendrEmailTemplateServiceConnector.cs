@@ -94,7 +94,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var entity = state.Entity?.AsWritable(uow) ?? EmailTemplate.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Alias, artifact.Name);
 
                 entity.SetName(artifact.Name, artifact.Alias)
-                    .SetCategory((EmailTemplateCategory)artifact.Category)
+                    .SetCategory((TemplateCategory)artifact.Category)
                     .SetSendToCustomer(artifact.SendToCustomer)
                     .SetSubject(artifact.Subject)
                     .SetSender(artifact.SenderName, artifact.SenderAddress)

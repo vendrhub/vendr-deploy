@@ -34,6 +34,9 @@ namespace Vendr.Deploy
             if (entity is EmailTemplateReadOnly emailTemplate)
                 return emailTemplate.GetUdi();
 
+            if (entity is PrintTemplateReadOnly printTemplate)
+                return printTemplate.GetUdi();
+
             if (entity is DiscountReadOnly discount)
                 return discount.GetUdi();
 
@@ -69,6 +72,9 @@ namespace Vendr.Deploy
 
         public static GuidUdi GetUdi(this EmailTemplateReadOnly entity)
             => new GuidUdi(VendrConstants.UdiEntityType.EmailTemplate, entity.Id);
+
+        public static GuidUdi GetUdi(this PrintTemplateReadOnly entity)
+            => new GuidUdi(VendrConstants.UdiEntityType.PrintTemplate, entity.Id);
 
         public static GuidUdi GetUdi(this DiscountReadOnly entity)
             => new GuidUdi(VendrConstants.UdiEntityType.Discount, entity.Id);
