@@ -17,7 +17,7 @@ x86/*
 bld/
 **/[Bb]in/*
 **/[Oo]bj/
-[Aa]rtifacts/
+/[Aa]rtifacts/
 
 # Roslyn cache directories
 *.ide/
