@@ -34,7 +34,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
             var udi = new GuidUdi(VendrConstants.UdiEntityType.Store, storeId);
 
-            dependencies.Add(new VendrArtifcatDependency(udi));
+            dependencies.Add(new VendrArtifactDependency(udi));
 
             return udi.ToString();
         }
