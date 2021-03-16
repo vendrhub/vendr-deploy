@@ -167,8 +167,8 @@
     <Reference Include="Umbraco.Deploy.UI, Version=3.4.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\UmbracoDeploy.3.4.5\lib\net45\Umbraco.Deploy.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Vendr.Core, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Vendr.Core.1.5.0\lib\net472\Vendr.Core.dll</HintPath>
+    <Reference Include="Vendr.Core, Version=1.5.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Vendr.Core.1.5.2-beta0007\lib\net472\Vendr.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
