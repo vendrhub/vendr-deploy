@@ -168,7 +168,7 @@
       <HintPath>..\..\packages\UmbracoDeploy.3.4.5\lib\net45\Umbraco.Deploy.UI.dll</HintPath>
     </Reference>
     <Reference Include="Vendr.Core, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Vendr.Core.1.6.0-alpha0088\lib\net472\Vendr.Core.dll</HintPath>
+      <HintPath>..\..\packages\Vendr.Core.1.6.0\lib\net472\Vendr.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -231,8 +231,8 @@ REM #################################################
 
 IF %25ComputerName%25 == DESKTOP-ESFKU58 (
 IF NOT "$(SolutionDir)" == "*Undefined*" (
-xcopy /s /y "$(TargetPath)" "$(SolutionDir)\..\SandboxCloud\bin"
-xcopy /s /y "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)\..\SandboxCloud\bin"
+REM xcopy /s /y "$(TargetPath)" "$(SolutionDir)\..\SandboxCloud\bin"
+REM xcopy /s /y "$(TargetDir)$(ProjectName).pdb" "$(SolutionDir)\..\SandboxCloud\bin"
 )
 )</PostBuildEvent>
   </PropertyGroup>

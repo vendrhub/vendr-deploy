@@ -48,7 +48,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcatDependency(storeUdi)
+                new VendrArtifactDependency(storeUdi)
             };
 
             return new PrintTemplateArtifact(udi, storeUdi, dependencies)
