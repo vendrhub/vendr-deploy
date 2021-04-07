@@ -27,6 +27,8 @@
             public const string Discount = "vendr-discount";
 
             public const string GiftCard = "vendr-gift-card";
+
+            public const string ProductAttribute = "vendr-product-attribute";
         }
     }
 }

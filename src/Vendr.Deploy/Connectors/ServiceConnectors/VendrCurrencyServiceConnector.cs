@@ -49,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcatDependency(storeUdi)
+                new VendrArtifactDependency(storeUdi)
             };
 
             var artifcat = new CurrencyArtifact(udi, storeUdi, dependencies)
@@ -69,7 +69,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 foreach (var allowedCountry in entity.AllowedCountries)
                 {
                     var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, allowedCountry.CountryId);
-                    var countryDep = new VendrArtifcatDependency(countryDepUdi);
+                    var countryDep = new VendrArtifactDependency(countryDepUdi);
 
                     dependencies.Add(countryDep);
 

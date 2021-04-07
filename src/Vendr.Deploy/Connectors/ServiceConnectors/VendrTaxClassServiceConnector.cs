@@ -49,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcatDependency(storeUdi)
+                new VendrArtifactDependency(storeUdi)
             };
 
             var artifcat = new TaxClassArtifact(udi, storeUdi, dependencies)
@@ -71,7 +71,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 };
 
                 var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
-                var countryDep = new VendrArtifcatDependency(countryDepUdi);
+                var countryDep = new VendrArtifactDependency(countryDepUdi);
                 dependencies.Add(countryDep);
 
                 crtrArtifact.CountryUdi = countryDepUdi;
@@ -79,7 +79,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 if (countryRegionTaxRate.RegionId.HasValue)
                 {
                     var regionDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, countryRegionTaxRate.CountryId);
-                    var regionDep = new VendrArtifcatDependency(regionDepUdi);
+                    var regionDep = new VendrArtifactDependency(regionDepUdi);
                     dependencies.Add(regionDep);
 
                     crtrArtifact.RegionUdi = regionDepUdi;

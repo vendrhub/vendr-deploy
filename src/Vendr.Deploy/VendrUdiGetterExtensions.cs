@@ -43,6 +43,9 @@ namespace Vendr.Deploy
             if (entity is GiftCardReadOnly giftCard)
                 return giftCard.GetUdi();
 
+            if (entity is ProductAttributeReadOnly productAtrtibtue)
+                return productAtrtibtue.GetUdi();
+
             return null;
         }
 
@@ -81,5 +84,8 @@ namespace Vendr.Deploy
 
         public static GuidUdi GetUdi(this GiftCardReadOnly entity)
             => new GuidUdi(VendrConstants.UdiEntityType.GiftCard, entity.Id);
+
+        public static GuidUdi GetUdi(this ProductAttributeReadOnly entity)
+            => new GuidUdi(VendrConstants.UdiEntityType.ProductAttribute, entity.Id);
     }
 }
