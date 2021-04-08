@@ -43,7 +43,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
             var udi = new GuidUdi(entityType, entity.Id);
 
-            dependencies.Add(new VendrArtifcatDependency(udi));
+            dependencies.Add(new VendrArtifactDependency(udi));
 
             return udi.ToString();
         }

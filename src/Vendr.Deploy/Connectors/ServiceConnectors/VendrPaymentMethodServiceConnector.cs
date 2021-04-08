@@ -49,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcatDependency(storeUdi)
+                new VendrArtifactDependency(storeUdi)
             };
 
             var artifcat = new PaymentMethodArtifact(udi, storeUdi, dependencies)
@@ -71,7 +71,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.TaxClassId != null)
             {
                 var taxClassDepUdi = new GuidUdi(VendrConstants.UdiEntityType.TaxClass, entity.TaxClassId.Value);
-                var taxClassDep = new VendrArtifcatDependency(taxClassDepUdi);
+                var taxClassDep = new VendrArtifactDependency(taxClassDepUdi);
                 
                 dependencies.Add(taxClassDep);
 
@@ -89,7 +89,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                     // Currency
                     var currencyDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Currency, price.CurrencyId);
-                    var currencyDep = new VendrArtifcatDependency(currencyDepUdi);
+                    var currencyDep = new VendrArtifactDependency(currencyDepUdi);
 
                     dependencies.Add(currencyDep);
 
@@ -99,7 +99,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     if (price.CountryId.HasValue)
                     {
                         var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, price.CountryId.Value);
-                        var countryDep = new VendrArtifcatDependency(countryDepUdi);
+                        var countryDep = new VendrArtifactDependency(countryDepUdi);
 
                         dependencies.Add(countryDep);
 
@@ -110,7 +110,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     if (price.RegionId.HasValue)
                     {
                         var regionDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Region, price.RegionId.Value);
-                        var regionDep = new VendrArtifcatDependency(regionDepUdi);
+                        var regionDep = new VendrArtifactDependency(regionDepUdi);
 
                         dependencies.Add(regionDep);
 
@@ -134,7 +134,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                     // Country
                     var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, acr.CountryId);
-                    var countryDep = new VendrArtifcatDependency(countryDepUdi);
+                    var countryDep = new VendrArtifactDependency(countryDepUdi);
 
                     dependencies.Add(countryDep);
 
@@ -144,7 +144,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     if (acr.RegionId.HasValue)
                     {
                         var regionDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Region, acr.RegionId.Value);
-                        var regionDep = new VendrArtifcatDependency(regionDepUdi);
+                        var regionDep = new VendrArtifactDependency(regionDepUdi);
 
                         dependencies.Add(regionDep);
 

@@ -40,7 +40,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                 // though and we should just be able to trust the property editor value
                 // is valid?
 
-                dependencies.Add(new VendrArtifcatDependency(udi));
+                dependencies.Add(new VendrArtifactDependency(udi));
 
                 dstDict.Add(udi, kvp.Value);
             }

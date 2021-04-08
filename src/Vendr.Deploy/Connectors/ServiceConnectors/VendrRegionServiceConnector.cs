@@ -49,7 +49,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifcatDependency(storeUdi)
+                new VendrArtifactDependency(storeUdi)
             };
 
             var artifcat = new RegionArtifact(udi, storeUdi, countryUdi, dependencies)
@@ -63,7 +63,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.DefaultPaymentMethodId != null)
             {
                 var pmDepUdi = new GuidUdi(VendrConstants.UdiEntityType.PaymentMethod, entity.DefaultPaymentMethodId.Value);
-                var pmDep = new VendrArtifcatDependency(pmDepUdi);
+                var pmDep = new VendrArtifactDependency(pmDepUdi);
 
                 dependencies.Add(pmDep);
 
@@ -74,7 +74,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             if (entity.DefaultShippingMethodId != null)
             {
                 var smDepUdi = new GuidUdi(VendrConstants.UdiEntityType.ShippingMethod, entity.DefaultShippingMethodId.Value);
-                var smDep = new VendrArtifcatDependency(smDepUdi);
+                var smDep = new VendrArtifactDependency(smDepUdi);
 
                 dependencies.Add(smDep);
 
