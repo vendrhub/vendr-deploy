@@ -206,6 +206,7 @@
     <Compile Include="Connectors\ValueConnectors\VendrPriceValueConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrStorePickerValueConnector.cs" />
     <Compile Include="Connectors\ValueConnectors\VendrVariantsEditorValueConnector.cs" />
+    <Compile Include="Converters\RoundingDecimalJsonConverter.cs" />
     <Compile Include="VendrArtifactDependency.cs" />
     <Compile Include="VendrConstants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
