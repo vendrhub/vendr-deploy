@@ -38,6 +38,12 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             if (string.IsNullOrWhiteSpace(artifact) || !artifact.DetectIsJson())
                 return null;
 
+            // The base call to ToArtifact will have stripped off the storeId property
+            // held in the root of the property value so we need to re-parse the original
+            // value and extract the store ID. If one is present, then we need to append
+            // this back into the artifact value but also then attempt to process any
+            // product attributes that need deploying.
+
             var originalVal = value is JObject
                 ? value.ToString()
                 : value as string;
@@ -72,6 +78,10 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
         public new object FromArtifact(string value, PropertyType propertyType, object currentValue)
         {
             var entity = base.FromArtifact(value, propertyType, currentValue);
+
+            // The base call to FromAtrtifact will have stripped off the storeId property
+            // held in the root of the property value so we need to re-parse the original
+            // value and extract the store ID, appending it back onto the JObject
 
             var jObj = entity as JObject;
             if (jObj != null && !string.IsNullOrWhiteSpace(value) && value.DetectIsJson())
