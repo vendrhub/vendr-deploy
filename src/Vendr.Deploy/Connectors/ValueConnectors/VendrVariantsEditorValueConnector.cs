@@ -111,7 +111,8 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
                             attrEntity.SetAlias(artifact.Alias)
                                 .SetName(new TranslatedValue<string>(artifact.Name.DefaultValue, artifact.Name.Translations))
-                                .SetValues(artifact.Values.Select(x => new KeyValuePair<string, TranslatedValue<string>>(x.Alias, new TranslatedValue<string>(x.Name.DefaultValue, x.Name.Translations))))
+                                .SetValues(artifact.Values.Select(x => new KeyValuePair<string, TranslatedValue<string>>(x.Alias, 
+                                    new TranslatedValue<string>(x.Name.DefaultValue, x.Name.Translations))))
                                 .SetSortOrder(artifact.SortOrder);
 
                             _vendrApi.SaveProductAttribute(attrEntity);
