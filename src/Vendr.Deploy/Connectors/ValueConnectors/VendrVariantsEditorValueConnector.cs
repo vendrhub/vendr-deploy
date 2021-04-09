@@ -65,7 +65,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                     var productAttribute = _venderApi.GetProductAttribute(blockEditorValue.StoreId.Value, productAttributeAlias);
                     if (productAttribute != null)
                     {
-                        dependencies.Add(new ArtifactDependency(productAttribute.GetUdi(), false, ArtifactDependencyMode.Match));
+                        dependencies.Add(new ArtifactDependency(productAttribute.GetUdi(), false, ArtifactDependencyMode.Exist));
                     }
                 }
 
