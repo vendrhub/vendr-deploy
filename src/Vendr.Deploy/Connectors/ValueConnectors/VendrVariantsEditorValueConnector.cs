@@ -75,8 +75,6 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                         var paArtifact = _productAttributeServiceConnector.GetArtifact(productAttribute.GetUdi(), productAttribute);
 
                         productAttributeArtifacts.Add(paArtifact);
-
-                        // dependencies.Add(new ArtifactDependency(productAttribute.GetUdi(), false, ArtifactDependencyMode.Exist));
                     }
                 }
 
@@ -98,7 +96,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
                 // We can't currently deploy custom entities via deploy so we fudge it by appending the
                 // product attributes to the serialized data or of property value. We then process
-                // these attributes ourselves.
+                // these attributes ourselves
 
                 if (baseValue.ProductAttributes != null)
                 {
@@ -109,22 +107,20 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                             artifact.Udi.EnsureType(VendrConstants.UdiEntityType.ProductAttribute);
                             artifact.StoreUdi.EnsureType(VendrConstants.UdiEntityType.Store);
 
-                            var existingEntity = _vendrApi.GetProductAttribute(artifact.Udi.Guid);
-                            if (existingEntity == null)
-                            {
-                                var attrEntity = ProductAttribute.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Alias, artifact.Name.DefaultValue);
+                            var attrEntity = _vendrApi.GetProductAttribute(artifact.Udi.Guid)?.AsWritable(uow) ?? ProductAttribute.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Alias, artifact.Name.DefaultValue);
 
-                                attrEntity.SetAlias(artifact.Alias)
-                                    .SetName(new TranslatedValue<string>(artifact.Name.DefaultValue, artifact.Name.Translations))
-                                    .SetValues(artifact.Values.Select(x => new KeyValuePair<string, TranslatedValue<string>>(x.Alias, new TranslatedValue<string>(x.Name.DefaultValue, x.Name.Translations))))
-                                    .SetSortOrder(artifact.SortOrder);
+                            attrEntity.SetAlias(artifact.Alias)
+                                .SetName(new TranslatedValue<string>(artifact.Name.DefaultValue, artifact.Name.Translations))
+                                .SetValues(artifact.Values.Select(x => new KeyValuePair<string, TranslatedValue<string>>(x.Alias, new TranslatedValue<string>(x.Name.DefaultValue, x.Name.Translations))))
+                                .SetSortOrder(artifact.SortOrder);
 
-                                _vendrApi.SaveProductAttribute(attrEntity);
-                            }
+                            _vendrApi.SaveProductAttribute(attrEntity);
                         }
 
                         uow.Complete();
                     }
+
+                    
                 }
             }
 
