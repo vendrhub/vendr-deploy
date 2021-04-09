@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,12 +38,19 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             if (string.IsNullOrWhiteSpace(artifact) || !artifact.DetectIsJson())
                 return null;
 
-            var blockEditorValue = JsonConvert.DeserializeObject<VariantsBlockEditorValue>(artifact);
-            if (blockEditorValue == null)
-                return null;
+            var originalVal = value is JObject
+                ? value.ToString()
+                : value as string;
 
-            if (blockEditorValue.StoreId.HasValue)
+            var storeValue = JsonConvert.DeserializeObject<StoreValue>(originalVal);
+            if (storeValue != null && storeValue.StoreId.HasValue)
             {
+                var blockEditorValue = JsonConvert.DeserializeObject<VariantsBlockEditorValue>(artifact);
+                if (blockEditorValue == null)
+                    return null;
+
+                blockEditorValue.StoreId = storeValue.StoreId.Value;
+
                 var productAttributeAliases = blockEditorValue.Layout.Items.SelectMany(x => x.Config.Attributes.Keys)
                     .Distinct();
 
@@ -54,6 +62,8 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                         dependencies.Add(new ArtifactDependency(productAttribute.GetUdi(), false, ArtifactDependencyMode.Match));
                     }
                 }
+
+                artifact = JsonConvert.SerializeObject(blockEditorValue);
             }
 
             return artifact;
@@ -62,6 +72,16 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
         public new object FromArtifact(string value, PropertyType propertyType, object currentValue)
         {
             var entity = base.FromArtifact(value, propertyType, currentValue);
+
+            var jObj = entity as JObject;
+            if (jObj != null && !string.IsNullOrWhiteSpace(value) && value.DetectIsJson())
+            {
+                var storeValue = JsonConvert.DeserializeObject<StoreValue>(value);
+                if (storeValue != null && storeValue.StoreId.HasValue)
+                {
+                    jObj["storeId"] = storeValue.StoreId.Value;
+                }
+            }
 
             return entity;
         }
@@ -72,11 +92,14 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
         string IValueConnector.ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
             => ToArtifact(value, propertyType, dependencies);
 
-        public class VariantsBlockEditorValue
+        public class StoreValue
         {
             [JsonProperty("storeId")]
             public Guid? StoreId { get; set; }
+        }
 
+        public class VariantsBlockEditorValue : StoreValue
+        {
             [JsonProperty("layout")]
             public VariantsBlockEditorLayout Layout { get; set; }
 
