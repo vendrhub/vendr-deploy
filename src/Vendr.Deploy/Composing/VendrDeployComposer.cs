@@ -11,14 +11,14 @@ namespace Vendr.Deploy.Composing
     {
         public void Compose(Composition composition)
         {
-            var prop = typeof(DeployConstants).GetProperty("DeployValidEntityTypes", BindingFlags.Static | BindingFlags.NonPublic);
-            if (prop != null && prop.CanRead)
-            {
-                if (prop.GetValue(null) is IList<string> list)
-                {
-                    list.Add(VendrConstants.UdiEntityType.ProductAttribute);
-                }
-            }
+            //var prop = typeof(DeployConstants).GetProperty("DeployValidEntityTypes", BindingFlags.Static | BindingFlags.NonPublic);
+            //if (prop != null && prop.CanRead)
+            //{
+            //    if (prop.GetValue(null) is IList<string> list)
+            //    {
+            //        list.Add(VendrConstants.UdiEntityType.ProductAttribute);
+            //    }
+            //}
 
             composition.Components()
                 .Append<VendrDeployComponent>();

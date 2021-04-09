@@ -12,6 +12,9 @@ using Umbraco.Core.Services;
 using Umbraco.Deploy.Connectors.ValueConnectors.Services;
 using Umbraco.Deploy.Contrib.Connectors.ValueConnectors;
 using Vendr.Core.Api;
+using Vendr.Core.Models;
+using Vendr.Deploy.Artifacts;
+using Vendr.Deploy.Connectors.ServiceConnectors;
 
 namespace Vendr.Deploy.Connectors.ValueConnectors
 {
@@ -20,15 +23,17 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
     /// </summary>
     public class VendrVariantsEditorValueConnector : BlockEditorValueConnector, IValueConnector
     {
-        private readonly IVendrApi _venderApi;
+        private readonly IVendrApi _vendrApi;
+        private readonly VendrProductAttributeServiceConnector _productAttributeServiceConnector;
 
         public override IEnumerable<string> PropertyEditorAliases => new[] { "Vendr.VariantsEditor" };
 
-        public VendrVariantsEditorValueConnector(IVendrApi vendrApi, IContentTypeService contentTypeService, 
-            Lazy<ValueConnectorCollection> valueConnectors, ILogger logger)
+        public VendrVariantsEditorValueConnector(IVendrApi vendrApi, 
+            IContentTypeService contentTypeService, Lazy<ValueConnectorCollection> valueConnectors, ILogger logger)
             : base(contentTypeService, valueConnectors, logger)
         {
-            _venderApi = vendrApi;
+            _vendrApi = vendrApi;
+            _productAttributeServiceConnector = new VendrProductAttributeServiceConnector(vendrApi);
         }
 
         public new string ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
@@ -48,26 +53,34 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                 ? value.ToString()
                 : value as string;
 
-            var storeValue = JsonConvert.DeserializeObject<StoreValue>(originalVal);
-            if (storeValue != null && storeValue.StoreId.HasValue)
+            var baseValue = JsonConvert.DeserializeObject<BaseValue>(originalVal);
+            if (baseValue != null && baseValue.StoreId.HasValue)
             {
                 var blockEditorValue = JsonConvert.DeserializeObject<VariantsBlockEditorValue>(artifact);
                 if (blockEditorValue == null)
                     return null;
 
-                blockEditorValue.StoreId = storeValue.StoreId.Value;
+                blockEditorValue.StoreId = baseValue.StoreId.Value;
 
                 var productAttributeAliases = blockEditorValue.Layout.Items.SelectMany(x => x.Config.Attributes.Keys)
                     .Distinct();
 
+                var productAttributeArtifacts = new List<ProductAttributeArtifact>();
+
                 foreach (var productAttributeAlias in productAttributeAliases)
                 {
-                    var productAttribute = _venderApi.GetProductAttribute(blockEditorValue.StoreId.Value, productAttributeAlias);
+                    var productAttribute = _vendrApi.GetProductAttribute(blockEditorValue.StoreId.Value, productAttributeAlias);
                     if (productAttribute != null)
                     {
-                        dependencies.Add(new ArtifactDependency(productAttribute.GetUdi(), false, ArtifactDependencyMode.Exist));
+                        var paArtifact = _productAttributeServiceConnector.GetArtifact(productAttribute.GetUdi(), productAttribute);
+
+                        productAttributeArtifacts.Add(paArtifact);
+
+                        // dependencies.Add(new ArtifactDependency(productAttribute.GetUdi(), false, ArtifactDependencyMode.Exist));
                     }
                 }
+
+                blockEditorValue.ProductAttributes = productAttributeArtifacts;
 
                 artifact = JsonConvert.SerializeObject(blockEditorValue);
             }
@@ -77,6 +90,44 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
         public new object FromArtifact(string value, PropertyType propertyType, object currentValue)
         {
+            BaseValue baseValue = null;
+
+            if (!string.IsNullOrWhiteSpace(value) && value.DetectIsJson())
+            {
+                baseValue = JsonConvert.DeserializeObject<BaseValue>(value);
+
+                // We can't currently deploy custom entities via deploy so we fudge it by appending the
+                // product attributes to the serialized data or of property value. We then process
+                // these attributes ourselves.
+
+                if (baseValue.ProductAttributes != null)
+                {
+                    using (var uow = _vendrApi.Uow.Create())
+                    {
+                        foreach (var artifact in baseValue.ProductAttributes)
+                        {
+                            artifact.Udi.EnsureType(VendrConstants.UdiEntityType.ProductAttribute);
+                            artifact.StoreUdi.EnsureType(VendrConstants.UdiEntityType.Store);
+
+                            var existingEntity = _vendrApi.GetProductAttribute(artifact.Udi.Guid);
+                            if (existingEntity == null)
+                            {
+                                var attrEntity = ProductAttribute.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Alias, artifact.Name.DefaultValue);
+
+                                attrEntity.SetAlias(artifact.Alias)
+                                    .SetName(new TranslatedValue<string>(artifact.Name.DefaultValue, artifact.Name.Translations))
+                                    .SetValues(artifact.Values.Select(x => new KeyValuePair<string, TranslatedValue<string>>(x.Alias, new TranslatedValue<string>(x.Name.DefaultValue, x.Name.Translations))))
+                                    .SetSortOrder(artifact.SortOrder);
+
+                                _vendrApi.SaveProductAttribute(attrEntity);
+                            }
+                        }
+
+                        uow.Complete();
+                    }
+                }
+            }
+
             var entity = base.FromArtifact(value, propertyType, currentValue);
 
             // The base call to FromAtrtifact will have stripped off the storeId property
@@ -84,13 +135,9 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             // value and extract the store ID, appending it back onto the JObject
 
             var jObj = entity as JObject;
-            if (jObj != null && !string.IsNullOrWhiteSpace(value) && value.DetectIsJson())
+            if (jObj != null && baseValue != null && baseValue.StoreId.HasValue)
             {
-                var storeValue = JsonConvert.DeserializeObject<StoreValue>(value);
-                if (storeValue != null && storeValue.StoreId.HasValue)
-                {
-                    jObj["storeId"] = storeValue.StoreId.Value;
-                }
+                jObj["storeId"] = baseValue.StoreId.Value;
             }
 
             return entity;
@@ -102,13 +149,16 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
         string IValueConnector.ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
             => ToArtifact(value, propertyType, dependencies);
 
-        public class StoreValue
+        public class BaseValue
         {
             [JsonProperty("storeId")]
             public Guid? StoreId { get; set; }
+
+            [JsonProperty("productAttributes")]
+            public IEnumerable<ProductAttributeArtifact> ProductAttributes { get; set; }
         }
 
-        public class VariantsBlockEditorValue : StoreValue
+        public class VariantsBlockEditorValue : BaseValue
         {
             [JsonProperty("layout")]
             public VariantsBlockEditorLayout Layout { get; set; }
