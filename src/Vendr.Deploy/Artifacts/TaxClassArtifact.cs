@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
+using Vendr.Deploy.Converters;
 
 namespace Vendr.Deploy.Artifacts
 {
@@ -10,6 +12,7 @@ namespace Vendr.Deploy.Artifacts
             : base(udi, storeUdi, dependencies)
         { }
 
+        [JsonConverter(typeof(RoundingDecimalJsonConverter), 3)]
         public decimal DefaultTaxRate { get; set; }
 
         public IEnumerable<CountryRegionTaxRateArtifact> CountryRegionTaxRates { get; set; }
@@ -23,6 +26,7 @@ namespace Vendr.Deploy.Artifacts
 
         public GuidUdi RegionUdi { get; set; }
 
+        [JsonConverter(typeof(RoundingDecimalJsonConverter), 3)]
         public decimal TaxRate { get; set; }
     }
 }
