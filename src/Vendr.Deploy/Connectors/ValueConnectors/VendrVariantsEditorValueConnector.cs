@@ -41,7 +41,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             if (blockEditorValue == null)
                 return null;
 
-            if (!blockEditorValue.StoreId.HasValue)
+            if (blockEditorValue.StoreId.HasValue)
             {
                 var productAttributeAliases = blockEditorValue.Layout.Items.SelectMany(x => x.Config.Attributes.Keys)
                     .Distinct();
@@ -74,6 +74,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
         public class VariantsBlockEditorValue
         {
+            [JsonProperty("storeId")]
             public Guid? StoreId { get; set; }
 
             [JsonProperty("layout")]
