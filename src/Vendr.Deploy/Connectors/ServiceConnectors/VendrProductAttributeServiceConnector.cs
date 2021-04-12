@@ -65,8 +65,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     Alias = x.Alias,
                     Name = new TranslatedValueArtifact<string>
                     {
-                        Translations = entity.Name.GetTranslationsDictionary(),
-                        DefaultValue = entity.Name.GetDefaultValue()
+                        Translations = x.Name.GetTranslationsDictionary(),
+                        DefaultValue = x.Name.GetDefaultValue()
                     }
                 }).ToList(),
                 SortOrder = entity.SortOrder
