@@ -52,7 +52,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 new VendrArtifactDependency(storeUdi)
             };
 
-            var artifcat = new ShippingMethodArtifact(udi, storeUdi, dependencies)
+            var artifact = new ShippingMethodArtifact(udi, storeUdi, dependencies)
             {
                 Name = entity.Name,
                 Alias = entity.Alias,
@@ -69,7 +69,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 
                 dependencies.Add(taxClassDep);
 
-                artifcat.TaxClassUdi = taxClassDepUdi;
+                artifact.TaxClassUdi = taxClassDepUdi;
             }
 
             // Service prices
@@ -114,7 +114,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     servicesPrices.Add(spArtifact);
                 }
 
-                artifcat.Prices = servicesPrices;
+                artifact.Prices = servicesPrices;
             }
 
             // Allowed country regions
@@ -148,10 +148,10 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     allowedCountryRegions.Add(acrArtifact);
                 }
 
-                artifcat.AllowedCountryRegions = allowedCountryRegions;
+                artifact.AllowedCountryRegions = allowedCountryRegions;
             }
 
-            return artifcat;
+            return artifact;
         }
 
         public override void Process(ArtifactDeployState<ShippingMethodArtifact, ShippingMethodReadOnly> state, IDeployContext context, int pass)
