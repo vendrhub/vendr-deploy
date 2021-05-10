@@ -167,13 +167,14 @@
     <Reference Include="Umbraco.Deploy.UI, Version=3.4.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\UmbracoDeploy.3.4.5\lib\net45\Umbraco.Deploy.UI.dll</HintPath>
     </Reference>
-    <Reference Include="Vendr.Core, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Vendr.Core.1.6.0\lib\net472\Vendr.Core.dll</HintPath>
+    <Reference Include="Vendr.Core, Version=1.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Vendr.Core.1.8.0\lib\net472\Vendr.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Artifacts\AllowedCountryRegionArtifact.cs" />
     <Compile Include="Artifacts\AllowedCountryArtifact.cs" />
+    <Compile Include="Artifacts\ExportTemplateArtifact.cs" />
     <Compile Include="Artifacts\PrintTemplateArtifact.cs" />
     <Compile Include="Artifacts\ProductAttributeArtifact.cs" />
     <Compile Include="Artifacts\ServicePriceArtifact.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="Artifacts\StoreEntityArtifactBase.cs" />
     <Compile Include="Composing\VendrDeployComponent.cs" />
     <Compile Include="Composing\VendrDeployComposer.cs" />
+    <Compile Include="Connectors\ServiceConnectors\VendrExportTemplateServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrPrintlTemplateServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrPaymentMethodServiceConnector.cs" />
     <Compile Include="Connectors\ServiceConnectors\VendrShippingMethodServiceConnector.cs" />
