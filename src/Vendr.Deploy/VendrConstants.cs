@@ -24,6 +24,8 @@
 
             public const string PrintTemplate = "vendr-print-template";
 
+            public const string ExportTemplate = "vendr-export-template";
+
             public const string Discount = "vendr-discount";
 
             public const string GiftCard = "vendr-gift-card";
