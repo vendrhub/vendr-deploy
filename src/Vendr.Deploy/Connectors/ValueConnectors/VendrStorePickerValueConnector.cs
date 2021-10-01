@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Vendr.Core.Api;
+
+#if NETFRAMEWORK
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
-using Umbraco.Core.Models;
-using Vendr.Core.Api;
+using IPropertyType = Umbraco.Core.Models.PropertyType;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+using Umbraco.Cms.Core.Models;
+#endif
 
 namespace Vendr.Deploy.Connectors.ValueConnectors
 {
@@ -18,7 +25,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             _venderApi = venderApi;
         }
 
-        public string ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
+        public string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
         {
             var svalue = value as string;
 
@@ -39,9 +46,9 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             return udi.ToString();
         }
 
-        public object FromArtifact(string value, PropertyType propertyType, object currentValue)
+        public object FromArtifact(string value, IPropertyType propertyType, object currentValue)
         {
-            if (string.IsNullOrWhiteSpace(value) || !GuidUdi.TryParse(value, out var udi) || udi.EntityType != VendrConstants.UdiEntityType.Store)
+            if (string.IsNullOrWhiteSpace(value) || !UdiHelper.TryParseGuidUdi(value, out var udi) || udi.EntityType != VendrConstants.UdiEntityType.Store)
                 return null;
 
             var store = _venderApi.GetStore(udi.Guid);

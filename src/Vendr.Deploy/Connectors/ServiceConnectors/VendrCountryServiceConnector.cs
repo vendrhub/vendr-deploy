@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+
+#if NETFRAMEWORK
+using Umbraco.Core;
+using Umbraco.Core.Deploy;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+#endif
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
     [UdiDefinition(VendrConstants.UdiEntityType.Country, UdiType.GuidUdi)]
     public class VendrCountryServiceConnector : VendrStoreEntityServiceConnectorBase<CountryArtifact, CountryReadOnly, Country, CountryState>
     {
-        public override int[] ProcessPasses => new [] 
+        public override int[] ProcessPasses => new[]
         {
             2,4
         };
 
-        public override string[] ValidOpenSelectors => new []
+        public override string[] ValidOpenSelectors => new[]
         {
             "this-and-descendants",
             "descendants"
@@ -63,7 +69,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 var currencyDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Currency, entity.DefaultCurrencyId.Value);
                 var currencyDep = new VendrArtifactDependency(currencyDepUdi);
-                
+
                 dependencies.Add(currencyDep);
 
                 artifcat.DefaultCurrencyUdi = currencyDepUdi;

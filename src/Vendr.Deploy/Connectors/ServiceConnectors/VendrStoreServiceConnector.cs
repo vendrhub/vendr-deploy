@@ -2,12 +2,19 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-using Umbraco.Core.Services;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+
+#if NETFRAMEWORK
+using Umbraco.Core;
+using Umbraco.Core.Deploy;
+using Umbraco.Core.Services;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+using Umbraco.Cms.Core.Services;
+#endif
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
@@ -16,12 +23,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
     {
         private readonly IUserService _userService;
 
-        public override int[] ProcessPasses => new [] 
+        public override int[] ProcessPasses => new[]
         {
             1,4
         };
 
-        public override string[] ValidOpenSelectors => new []
+        public override string[] ValidOpenSelectors => new[]
         {
             "this-and-descendants",
             "descendants"
@@ -63,6 +70,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 CookieTimeout = entity.CookieTimeout,
                 CartNumberTemplate = entity.CartNumberTemplate,
                 OrderNumberTemplate = entity.OrderNumberTemplate,
+                OrderRoundingMethod = (int)entity.OrderRoundingMethod,
                 ProductPropertyAliases = entity.ProductPropertyAliases,
                 ProductUniquenessPropertyAliases = entity.ProductUniquenessPropertyAliases,
                 GiftCardCodeLength = entity.GiftCardCodeLength,
@@ -211,7 +219,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             return artifact;
         }
-                
+
         public override void Process(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context, int pass)
         {
             state.NextPass = GetNextPass(ProcessPasses, pass);
@@ -237,13 +245,14 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 artifact.Udi.EnsureType(VendrConstants.UdiEntityType.Store);
 
-                var entity = state.Entity?.AsWritable(uow) 
+                var entity = state.Entity?.AsWritable(uow)
                     ?? Store.Create(uow, artifact.Udi.Guid, artifact.Alias, artifact.Name, false);
 
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetPriceTaxInclusivity(artifact.PricesIncludeTax)
                     .SetCartNumberTemplate(artifact.CartNumberTemplate)
                     .SetOrderNumberTemplate(artifact.OrderNumberTemplate)
+                    .SetOrderRoundingMethod((OrderRoundingMethod)artifact.OrderRoundingMethod)
                     .SetProductPropertyAliases(artifact.ProductPropertyAliases, SetBehavior.Replace)
                     .SetProductUniquenessPropertyAliases(artifact.ProductUniquenessPropertyAliases, SetBehavior.Replace)
                     .SetGiftCardCodeLength(artifact.GiftCardCodeLength)
@@ -253,7 +262,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     .SetGiftCardActivationMethod((GiftCardActivationMethod)artifact.GiftCardActivationMethod)
                     .SetOrderEditorConfig(artifact.OrderEditorConfig)
                     .SetSortOrder(artifact.SortOrder);
-    
+
                 if (artifact.CookieTimeout.HasValue)
                 {
                     entity.EnableCookies(artifact.CookieTimeout.Value);

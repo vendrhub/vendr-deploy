@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+
+#if NETFRAMEWORK
+using Umbraco.Core;
+using Umbraco.Core.Deploy;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+#endif
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
     [UdiDefinition(VendrConstants.UdiEntityType.EmailTemplate, UdiType.GuidUdi)]
     public class VendrEmailTemplateServiceConnector : VendrStoreEntityServiceConnectorBase<EmailTemplateArtifact, EmailTemplateReadOnly, EmailTemplate, EmailTemplateState>
     {
-        public override int[] ProcessPasses => new [] 
+        public override int[] ProcessPasses => new[]
         {
             2
         };
 
-        public override string[] ValidOpenSelectors => new []
+        public override string[] ValidOpenSelectors => new[]
         {
             "this-and-descendants",
             "descendants"

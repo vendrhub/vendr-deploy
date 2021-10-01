@@ -1,10 +1,17 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using Vendr.Core.Api;
+
+#if NETFRAMEWORK
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
-using Umbraco.Core.Models;
-using Vendr.Core.Api;
+using IPropertyType = Umbraco.Core.Models.PropertyType;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+using Umbraco.Cms.Core.Models;
+#endif
 
 namespace Vendr.Deploy.Connectors.ValueConnectors
 {
@@ -19,7 +26,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             _venderApi = venderApi;
         }
 
-        public string ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
+        public string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
         {
             var svalue = value as string;
 
@@ -48,7 +55,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             return JsonConvert.SerializeObject(dstDict);
         }
 
-        public object FromArtifact(string value, PropertyType propertyType, object currentValue)
+        public object FromArtifact(string value, IPropertyType propertyType, object currentValue)
         {
             var svalue = value as string;
 
@@ -60,7 +67,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
             foreach (var kvp in srcDict)
             {
-                if (GuidUdi.TryParse(kvp.Key, out var udi) && udi.EntityType == VendrConstants.UdiEntityType.Currency)
+                if (UdiHelper.TryParseGuidUdi(kvp.Key, out var udi) && udi.EntityType == VendrConstants.UdiEntityType.Currency)
                 {
                     var currencyEntity = _venderApi.GetCurrency(udi.Guid);
                     if (currencyEntity != null)

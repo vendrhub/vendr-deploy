@@ -1,9 +1,17 @@
-﻿using Umbraco.Core.Composing;
+﻿using Vendr.Core.Events;
+using Vendr.Core.Models;
+
+#if NETFRAMEWORK
+using Umbraco.Core.Composing;
 using Umbraco.Core.Deploy;
 using Umbraco.Deploy;
 using Umbraco.Deploy.Connectors.ServiceConnectors;
-using Vendr.Core.Events;
-using Vendr.Core.Models;
+#else
+using Umbraco.Cms.Core.Composing;
+using Umbraco.Cms.Core.Deploy;
+using Umbraco.Deploy.Core;
+using Umbraco.Deploy.Core.Connectors.ServiceConnectors;
+#endif
 
 namespace Vendr.Deploy.Composing
 {
@@ -40,13 +48,14 @@ namespace Vendr.Deploy.Composing
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.TaxClass);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.EmailTemplate);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.PrintTemplate);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.ExportTemplate);
 
             // TODO: Other entities
 
             // Stores
             EventHub.NotificationEvents.OnStoreSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.Store) }));
             EventHub.NotificationEvents.OnStoreDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.Store) }));
-            
+
             // OrderStatus
             EventHub.NotificationEvents.OnOrderStatusSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.OrderStatus) }));
             EventHub.NotificationEvents.OnOrderStatusDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.OrderStatus) }));
@@ -78,10 +87,14 @@ namespace Vendr.Deploy.Composing
             // EmailTemplate
             EventHub.NotificationEvents.OnEmailTemplateSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.EmailTemplate) }));
             EventHub.NotificationEvents.OnEmailTemplateDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.EmailTemplate) }));
-            
+
             // PrintTemplate
             EventHub.NotificationEvents.OnPrintTemplateSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.PrintTemplate) }));
             EventHub.NotificationEvents.OnPrintTemplateDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.PrintTemplate) }));
+
+            // ExportTemplate
+            EventHub.NotificationEvents.OnExportTemplateSaved((e) => _diskEntityService.WriteArtifacts(new[] { GetEntityArtifact(e.ExportTemplate) }));
+            EventHub.NotificationEvents.OnExportTemplateDeleted((e) => _diskEntityService.DeleteArtifacts(new[] { GetEntityArtifact(e.ExportTemplate) }));
 
             // TODO: Other entity events
         }

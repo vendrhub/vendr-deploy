@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+
+#if NETFRAMEWORK
+using Umbraco.Core;
+using Umbraco.Core.Deploy;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+#endif
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
     [UdiDefinition(VendrConstants.UdiEntityType.ProductAttribute, UdiType.GuidUdi)]
     public class VendrProductAttributeServiceConnector : VendrStoreEntityServiceConnectorBase<ProductAttributeArtifact, ProductAttributeReadOnly, ProductAttribute, ProductAttributeState>
     {
-        public override int[] ProcessPasses => new [] 
+        public override int[] ProcessPasses => new[]
         {
             2
         };
 
-        public override string[] ValidOpenSelectors => new []
+        public override string[] ValidOpenSelectors => new[]
         {
             "this-and-descendants",
             "descendants"
@@ -56,16 +62,16 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 Name = new TranslatedValueArtifact<string>
                 {
-                    Translations = entity.Name.GetTranslationsDictionary(),
+                    Translations = entity.Name.GetTranslatedValues().ToDictionary(x => x.Key, x => x.Value),
                     DefaultValue = entity.Name.GetDefaultValue()
                 },
                 Code = entity.Alias,
-                Values = entity.Values.Select(x =>  new ProductAttributeValueArtifact
+                Values = entity.Values.Select(x => new ProductAttributeValueArtifact
                 {
                     Alias = x.Alias,
                     Name = new TranslatedValueArtifact<string>
                     {
-                        Translations = x.Name.GetTranslationsDictionary(),
+                        Translations = x.Name.GetTranslatedValues().ToDictionary(y => y.Key, y => y.Value),
                         DefaultValue = x.Name.GetDefaultValue()
                     }
                 }).ToList(),

@@ -1,13 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Vendr.Core.Api;
+using Vendr.Core.Models;
+
+#if NETFRAMEWORK
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
 using Umbraco.Deploy.Artifacts;
 using Umbraco.Deploy.Connectors.ServiceConnectors;
 using Umbraco.Deploy.Exceptions;
-using Vendr.Core.Api;
-using Vendr.Core.Models;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+using Umbraco.Deploy.Core.Exceptions;
+using Umbraco.Deploy.Infrastructure.Artifacts;
+using Umbraco.Deploy.Infrastructure.Connectors.ServiceConnectors;
+#endif
+
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
     public abstract class VendrEntityServiceConnectorBase<TArtifact, TEntity> : ServiceConnectorBase<TArtifact, GuidUdi, ArtifactDeployState<TArtifact, TEntity>>

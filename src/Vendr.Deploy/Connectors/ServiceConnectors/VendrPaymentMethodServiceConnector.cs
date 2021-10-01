@@ -1,23 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+
+#if NETFRAMEWORK
+using Umbraco.Core;
+using Umbraco.Core.Deploy;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+#endif
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
     [UdiDefinition(VendrConstants.UdiEntityType.PaymentMethod, UdiType.GuidUdi)]
     public class VendrPaymentMethodServiceConnector : VendrStoreEntityServiceConnectorBase<PaymentMethodArtifact, PaymentMethodReadOnly, PaymentMethod, PaymentMethodState>
     {
-        public override int[] ProcessPasses => new [] 
+        public override int[] ProcessPasses => new[]
         {
             2,4
         };
 
-        public override string[] ValidOpenSelectors => new []
+        public override string[] ValidOpenSelectors => new[]
         {
             "this-and-descendants",
             "descendants"
@@ -72,7 +78,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 var taxClassDepUdi = new GuidUdi(VendrConstants.UdiEntityType.TaxClass, entity.TaxClassId.Value);
                 var taxClassDep = new VendrArtifactDependency(taxClassDepUdi);
-                
+
                 dependencies.Add(taxClassDep);
 
                 artifcat.TaxClassUdi = taxClassDepUdi;
@@ -83,7 +89,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 var servicesPrices = new List<ServicePriceArtifact>();
 
-                foreach(var price in entity.Prices)
+                foreach (var price in entity.Prices)
                 {
                     var spArtifact = new ServicePriceArtifact { Value = price.Value };
 

@@ -1,27 +1,32 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
+﻿#if NETFRAMEWORK
+using Umbraco.Deploy;
 using Umbraco.Core;
 using Umbraco.Core.Composing;
-using Umbraco.Deploy;
+using IComposer = Umbraco.Core.Composing.IUserComposer;
+#else
+using Umbraco.Cms.Core.Composing;
+using Umbraco.Cms.Core.DependencyInjection;
+#endif
 
 namespace Vendr.Deploy.Composing
 {
+#if NETFRAMEWORK
     [ComposeAfter(typeof(DeployComposer))]
-    public class VendrDeployComposer : IUserComposer
+#endif
+    public class VendrDeployComposer : IComposer
     {
+#if NETFRAMEWORK
         public void Compose(Composition composition)
         {
-            //var prop = typeof(DeployConstants).GetProperty("DeployValidEntityTypes", BindingFlags.Static | BindingFlags.NonPublic);
-            //if (prop != null && prop.CanRead)
-            //{
-            //    if (prop.GetValue(null) is IList<string> list)
-            //    {
-            //        list.Add(VendrConstants.UdiEntityType.ProductAttribute);
-            //    }
-            //}
-
             composition.Components()
                 .Append<VendrDeployComponent>();
         }
+#else
+        public void Compose(IUmbracoBuilder builder)
+        {
+            builder.Components()
+                .Append<VendrDeployComponent>();
+        }
+#endif
     }
 }

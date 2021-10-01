@@ -1,8 +1,14 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using Vendr.Deploy.Converters;
+
+#if NETFRAMEWORK
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
-using Vendr.Deploy.Converters;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+#endif
 
 namespace Vendr.Deploy.Artifacts
 {

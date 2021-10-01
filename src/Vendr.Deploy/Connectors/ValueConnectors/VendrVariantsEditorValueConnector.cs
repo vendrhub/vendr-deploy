@@ -3,18 +3,31 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Models;
-using Umbraco.Core.Serialization;
-using Umbraco.Core.Services;
-using Umbraco.Deploy.Connectors.ValueConnectors.Services;
-using Umbraco.Deploy.Contrib.Connectors.ValueConnectors;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
 using Vendr.Deploy.Connectors.ServiceConnectors;
+
+#if NETFRAMEWORK
+using Umbraco.Core;
+using Umbraco.Core.Deploy;
+using Umbraco.Core.Logging;
+using Umbraco.Core.Serialization;
+using Umbraco.Core.Services;
+using Umbraco.Deploy.Connectors.ValueConnectors.Services;
+using Umbraco.Deploy.Contrib.Connectors.ValueConnectors;
+using IPropertyType = Umbraco.Core.Models.PropertyType;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+using Umbraco.Cms.Core.Models;
+using Umbraco.Cms.Core.Services;
+using Umbraco.Cms.Infrastructure.Serialization;
+using Umbraco.Deploy.Core.Connectors.ValueConnectors.Services;
+using Umbraco.Deploy.Contrib.ValueConnectors;
+using Umbraco.Extensions;
+using Microsoft.Extensions.Logging;
+#endif
 
 namespace Vendr.Deploy.Connectors.ValueConnectors
 {
@@ -28,15 +41,20 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
         public override IEnumerable<string> PropertyEditorAliases => new[] { "Vendr.VariantsEditor" };
 
-        public VendrVariantsEditorValueConnector(IVendrApi vendrApi, 
-            IContentTypeService contentTypeService, Lazy<ValueConnectorCollection> valueConnectors, ILogger logger)
+        public VendrVariantsEditorValueConnector(IVendrApi vendrApi,
+            IContentTypeService contentTypeService, Lazy<ValueConnectorCollection> valueConnectors,
+#if NETFRAMEWORK
+            ILogger logger)
+#else
+            ILogger<VendrVariantsEditorValueConnector> logger)
+#endif
             : base(contentTypeService, valueConnectors, logger)
         {
             _vendrApi = vendrApi;
             _productAttributeServiceConnector = new VendrProductAttributeServiceConnector(vendrApi);
         }
 
-        public new string ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
+        public new string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
         {
             var artifact = base.ToArtifact(value, propertyType, dependencies);
 
@@ -86,7 +104,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             return artifact;
         }
 
-        public new object FromArtifact(string value, PropertyType propertyType, object currentValue)
+        public new object FromArtifact(string value, IPropertyType propertyType, object currentValue)
         {
             BaseValue baseValue = null;
 
@@ -111,7 +129,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
                             attrEntity.SetAlias(artifact.Alias)
                                 .SetName(new TranslatedValue<string>(artifact.Name.DefaultValue, artifact.Name.Translations))
-                                .SetValues(artifact.Values.Select(x => new KeyValuePair<string, TranslatedValue<string>>(x.Alias, 
+                                .SetValues(artifact.Values.Select(x => new KeyValuePair<string, TranslatedValue<string>>(x.Alias,
                                     new TranslatedValue<string>(x.Name.DefaultValue, x.Name.Translations))))
                                 .SetSortOrder(artifact.SortOrder);
 
@@ -121,7 +139,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                         uow.Complete();
                     }
 
-                    
+
                 }
             }
 
@@ -140,10 +158,10 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             return entity;
         }
 
-        object IValueConnector.FromArtifact(string value, PropertyType propertyType, object currentValue)
+        object IValueConnector.FromArtifact(string value, IPropertyType propertyType, object currentValue)
             => FromArtifact(value, propertyType, currentValue);
 
-        string IValueConnector.ToArtifact(object value, PropertyType propertyType, ICollection<ArtifactDependency> dependencies)
+        string IValueConnector.ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
             => ToArtifact(value, propertyType, dependencies);
 
         public class BaseValue

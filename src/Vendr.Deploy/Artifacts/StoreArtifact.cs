@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+
+#if NETFRAMEWORK
 using Umbraco.Core;
 using Umbraco.Core.Deploy;
 using Umbraco.Deploy.Artifacts;
+#else
+using Umbraco.Cms.Core;
+using Umbraco.Cms.Core.Deploy;
+using Umbraco.Deploy.Infrastructure.Artifacts;
+#endif
 
 namespace Vendr.Deploy.Artifacts
 {
     public class StoreArtifact : DeployArtifactBase<GuidUdi>
     {
-        public StoreArtifact(GuidUdi udi, IEnumerable<ArtifactDependency> dependencies = null) 
+        public StoreArtifact(GuidUdi udi, IEnumerable<ArtifactDependency> dependencies = null)
             : base(udi, dependencies)
         { }
 
@@ -30,6 +37,8 @@ namespace Vendr.Deploy.Artifacts
 
         public string OrderNumberTemplate { get; set; }
 
+        public int OrderRoundingMethod { get; set; }
+
         public IEnumerable<string> ProductPropertyAliases { get; set; }
 
         public IEnumerable<string> ProductUniquenessPropertyAliases { get; set; }
@@ -44,13 +53,14 @@ namespace Vendr.Deploy.Artifacts
 
         public IEnumerable<string> GiftCardPropertyAliases { get; set; }
 
-        public int GiftCardActivationMethod  { get; set; }
+        public int GiftCardActivationMethod { get; set; }
 
         public GuidUdi GiftCardActivationOrderStatusUdi { get; set; }
 
         public GuidUdi DefaultGiftCardEmailTemplateUdi { get; set; }
 
         public GuidUdi ConfirmationEmailTemplateUdi { get; set; }
+
         public GuidUdi ErrorEmailTemplateUdi { get; set; }
 
         public string OrderEditorConfig { get; set; }
