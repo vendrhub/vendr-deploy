@@ -18,6 +18,8 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 - [x] Serialize Currencies
 - [x] Serialize Tax Classes
 - [x] Serialize Email Templates
+- [x] Serialize Print Templates
+- [x] Serialize Export Templates
 
 #### Restoring
 
@@ -30,10 +32,12 @@ Current primary focus is on syncing store settings, not orders, discounts or gif
 - [x] Restore Currencies
 - [x] Restore Tax Classes
 - [x] Restore Email Templates
+- [x] Restore Print Templates
+- [x] Restore Export Templates
 
 ### Property Editors
 
 - [x] Store Picker
 - [x] Store Entity Picker
 - [x] Price
-- [ ] Variants (future)
+- [x] Variants
