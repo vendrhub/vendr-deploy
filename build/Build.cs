@@ -3,6 +3,7 @@ using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
+using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Utilities.Collections;
@@ -25,8 +26,14 @@ class Build : NukeBuild
     [GitVersion(Framework = "net5.0")]
     readonly GitVersion GitVersion;
 
+    [PackageExecutable(packageId: "Umbraco.Tools.Packages", packageExecutable: "UmbPack.dll")]
+    readonly Tool UmbPack;
+
+    readonly string ProjectName = "Vendr.Deploy";
+
     AbsolutePath SourceDirectory => RootDirectory / "src";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
+    AbsolutePath ArtifactPackagesDirectory => ArtifactsDirectory / "packages";
 
     // =================================================
     // Clean
@@ -68,17 +75,31 @@ class Build : NukeBuild
     // Pack
     // =================================================
 
+    private void PackNugetPackage()
+    {
+        DotNetPack(c => c
+            .SetProject(Solution)
+            .SetConfiguration(Configuration)
+            .SetVersion(GitVersion.NuGetVersionV2)
+            .SetOutputDirectory(ArtifactPackagesDirectory)
+            .SetNoBuild(true));
+    }
+
+    private void PackUmbracoPackage()
+    {
+        var umbracoPackageXmlDir = BuildProjectDirectory / "Umbraco";
+        var umbracoPackageXmlFile = umbracoPackageXmlDir / $"{ProjectName}.package.xml";
+
+        UmbPack($"pack {umbracoPackageXmlFile} -n {{name}}.{{version}}.zip -v {GitVersion.NuGetVersion} -o {ArtifactPackagesDirectory} -p Configuration={Configuration}", workingDirectory: RootDirectory);
+    }
+
     Target Pack => _ => _
         .DependsOn(Compile)
         .Produces(ArtifactsDirectory)
         .Executes(() =>
         {
-            DotNetPack(c => c
-                .SetProject(Solution)
-                .SetConfiguration(Configuration)
-                .SetVersion(GitVersion.NuGetVersionV2)
-                .SetOutputDirectory(ArtifactsDirectory)
-                .SetNoBuild(true));
+            PackNugetPackage();
+            PackUmbracoPackage();
         });
 
 }
