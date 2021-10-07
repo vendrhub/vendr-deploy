@@ -15,7 +15,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Vendr.Umbraco.Startup" Version="2.0.0-rc0051" />
+        <PackageReference Include="Vendr.Umbraco.Startup" Version="2.0.0" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
