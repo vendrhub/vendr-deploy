@@ -69,7 +69,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 ImageId = entity.ImageId, // Could be a UDI?
                 PaymentProviderAlias = entity.PaymentProviderAlias,
                 PaymentProviderSettings = entity.PaymentProviderSettings
-                    .Where(x => !StringExtensions.InvariantContains(_settingsAccessor.Settings.PaymentProviders.IgnoreSettings, x.Key)) // Ignore any settings that shouldn't be transfered
+                    .Where(x => !StringExtensions.InvariantContains(_settingsAccessor.Settings.PaymentMethods.IgnoreSettings, x.Key)) // Ignore any settings that shouldn't be transfered
                     .ToDictionary(x => x.Key, x => x.Value), // Could contain UDIs?
                 CanFetchPaymentStatuses = entity.CanFetchPaymentStatuses,
                 CanCapturePayments = entity.CanCapturePayments,

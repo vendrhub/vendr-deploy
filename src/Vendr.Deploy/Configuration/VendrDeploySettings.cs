@@ -9,22 +9,22 @@ namespace Vendr.Deploy.Configuration
 {
     public class VendrDeploySettings
     {
-        public VendrDeployPaymentProviderSettings PaymentProviders { get; set; }
+        public VendrDeployPaymentMethodSettings PaymentMethods { get; set; }
 
         public VendrDeploySettings()
         {
-            PaymentProviders = new VendrDeployPaymentProviderSettings();
+            PaymentMethods = new VendrDeployPaymentMethodSettings();
         }
     }
 
-    public class VendrDeployPaymentProviderSettings
+    public class VendrDeployPaymentMethodSettings
     {
         public string[] IgnoreSettings { get; set; }
 
-        public VendrDeployPaymentProviderSettings()
+        public VendrDeployPaymentMethodSettings()
         {
 #if NETFRAMEWORK
-            IgnoreSettings = (ConfigurationManager.AppSettings["Vendr.Deploy:PaymentProviders:IgnoreSettings"] ?? "")
+            IgnoreSettings = (ConfigurationManager.AppSettings["Vendr.Deploy:PaymentMethods:IgnoreSettings"] ?? "")
                 .Split(new[] { "," }, System.StringSplitOptions.RemoveEmptyEntries)
                 .ToArray();
 #else
