@@ -24,7 +24,7 @@ namespace Vendr.Deploy.Configuration
         public VendrDeployPaymentProviderSettings()
         {
 #if NETFRAMEWORK
-            IgnoreSettings = (ConfigurationManager.AppSettings["VendrDeploy:PaymentProviders:IgnoreSettings"] ?? "")
+            IgnoreSettings = (ConfigurationManager.AppSettings["Vendr.Deploy:PaymentProviders:IgnoreSettings"] ?? "")
                 .Split(new[] { "," }, System.StringSplitOptions.RemoveEmptyEntries)
                 .ToArray();
 #else

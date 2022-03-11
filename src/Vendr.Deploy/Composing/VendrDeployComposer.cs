@@ -31,7 +31,7 @@ namespace Vendr.Deploy.Composing
         public void Compose(IUmbracoBuilder builder)
         {
             builder.Services.AddOptions<VendrDeploySettings>()
-                .Bind(builder.Config.GetSection("VendrDeploy"));
+                .Bind(builder.Config.GetSection("Vendr.Deploy"));
             builder.Services.AddSingleton<VendrDeploySettingsAccessor>();
 
             builder.Components()
