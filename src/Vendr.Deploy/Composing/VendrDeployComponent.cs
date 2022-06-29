@@ -10,7 +10,7 @@ using Umbraco.Deploy.Connectors.ServiceConnectors;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Deploy;
-using Umbraco.Deploy.Core;
+using Umbraco.Deploy.Infrastructure.Disk;
 using Umbraco.Deploy.Core.Connectors.ServiceConnectors;
 #endif
 
