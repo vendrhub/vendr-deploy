@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+using Vendr.Deploy.Configuration;
 
 #if NETFRAMEWORK
 using Umbraco.Core;
@@ -32,8 +33,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.EmailTemplate;
 
-        public VendrEmailTemplateServiceConnector(IVendrApi vendrApi)
-            : base(vendrApi)
+        public VendrEmailTemplateServiceConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor)
+            : base(vendrApi, settingsAccessor)
         { }
 
         public override string GetEntityName(EmailTemplateReadOnly entity)

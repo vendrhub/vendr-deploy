@@ -4,6 +4,7 @@ using System.Linq;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+using Vendr.Deploy.Configuration;
 
 #if NETFRAMEWORK
 using Umbraco.Core;
@@ -33,8 +34,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.TaxClass;
 
-        public VendrTaxClassServiceConnector(IVendrApi vendrApi)
-            : base(vendrApi)
+        public VendrTaxClassServiceConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor)
+            : base(vendrApi, settingsAccessor)
         { }
 
         public override string GetEntityName(TaxClassReadOnly entity)

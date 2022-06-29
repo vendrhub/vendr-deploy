@@ -7,6 +7,7 @@ using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
 using Vendr.Deploy.Connectors.ServiceConnectors;
+using Vendr.Deploy.Configuration;
 
 #if NETFRAMEWORK
 using Umbraco.Core;
@@ -41,7 +42,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
         public override IEnumerable<string> PropertyEditorAliases => new[] { "Vendr.VariantsEditor" };
 
-        public VendrVariantsEditorValueConnector(IVendrApi vendrApi,
+        public VendrVariantsEditorValueConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor,
             IContentTypeService contentTypeService, Lazy<ValueConnectorCollection> valueConnectors,
 #if NETFRAMEWORK
             ILogger logger)
@@ -51,7 +52,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             : base(contentTypeService, valueConnectors, logger)
         {
             _vendrApi = vendrApi;
-            _productAttributeServiceConnector = new VendrProductAttributeServiceConnector(vendrApi);
+            _productAttributeServiceConnector = new VendrProductAttributeServiceConnector(vendrApi, settingsAccessor);
         }
 
         public new string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)

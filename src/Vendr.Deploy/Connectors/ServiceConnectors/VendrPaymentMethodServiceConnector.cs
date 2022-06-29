@@ -4,6 +4,9 @@ using System.Linq;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+using Vendr.Deploy.Configuration;
+
+using StringExtensions = Vendr.Extensions.StringExtensions;
 
 #if NETFRAMEWORK
 using Umbraco.Core;
@@ -33,8 +36,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.PaymentMethod;
 
-        public VendrPaymentMethodServiceConnector(IVendrApi vendrApi)
-            : base(vendrApi)
+        public VendrPaymentMethodServiceConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor)
+            : base(vendrApi, settingsAccessor)
         { }
 
         public override string GetEntityName(PaymentMethodReadOnly entity)
@@ -65,7 +68,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 Sku = entity.Sku,
                 ImageId = entity.ImageId, // Could be a UDI?
                 PaymentProviderAlias = entity.PaymentProviderAlias,
-                PaymentProviderSettings = entity.PaymentProviderSettings.ToDictionary(x => x.Key, x => x.Value), // Could contain UDIs?
+                PaymentProviderSettings = entity.PaymentProviderSettings
+                    .Where(x => !StringExtensions.InvariantContains(_settingsAccessor.Settings.PaymentMethods.IgnoreSettings, x.Key)) // Ignore any settings that shouldn't be transfered
+                    .ToDictionary(x => x.Key, x => x.Value), // Could contain UDIs?
                 CanFetchPaymentStatuses = entity.CanFetchPaymentStatuses,
                 CanCapturePayments = entity.CanCapturePayments,
                 CanCancelPayments = entity.CanCancelPayments,
@@ -197,7 +202,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetSku(artifact.Sku)
                     .SetImage(artifact.ImageId)
-                    .SetSettings(artifact.PaymentProviderSettings, SetBehavior.Replace)
+                    .SetSettings(artifact.PaymentProviderSettings, SetBehavior.Merge)
                     .ToggleFeatures(artifact.CanFetchPaymentStatuses, artifact.CanCapturePayments, artifact.CanCancelPayments, artifact.CanRefundPayments)
                     .SetSortOrder(artifact.SortOrder);
 

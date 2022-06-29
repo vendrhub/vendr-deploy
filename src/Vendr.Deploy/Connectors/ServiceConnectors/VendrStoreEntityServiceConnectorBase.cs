@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+using Vendr.Deploy.Configuration;
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
@@ -12,8 +13,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
         where TEntityWritable : TEntityReadOnly
         where TEntityState : StoreAggregateStateBase
     {
-        public VendrStoreEntityServiceConnectorBase(IVendrApi vendrApi)
-            : base(vendrApi)
+        public VendrStoreEntityServiceConnectorBase(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor)
+            : base(vendrApi, settingsAccessor)
         { }
 
         public override IEnumerable<TEntityReadOnly> GetEntities()

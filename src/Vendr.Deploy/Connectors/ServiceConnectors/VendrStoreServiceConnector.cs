@@ -5,6 +5,7 @@ using System.Linq;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
+using Vendr.Deploy.Configuration;
 
 #if NETFRAMEWORK
 using Umbraco.Core;
@@ -38,8 +39,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.Store;
 
-        public VendrStoreServiceConnector(IVendrApi vendrApi, IUserService userService)
-            : base(vendrApi)
+        public VendrStoreServiceConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor, IUserService userService)
+            : base(vendrApi, settingsAccessor)
         {
             _userService = userService;
         }

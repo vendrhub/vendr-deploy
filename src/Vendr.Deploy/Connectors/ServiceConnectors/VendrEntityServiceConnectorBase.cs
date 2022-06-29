@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
+using Vendr.Deploy.Configuration;
 
 #if NETFRAMEWORK
 using Umbraco.Core;
@@ -25,6 +26,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
         where TEntity : EntityBase
     {
         protected readonly IVendrApi _vendrApi;
+        protected readonly VendrDeploySettingsAccessor _settingsAccessor;
 
         public abstract int[] ProcessPasses { get; }
 
@@ -34,9 +36,10 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public abstract string UdiEntityType { get; }
 
-        public VendrEntityServiceConnectorBase(IVendrApi vendrApi)
+        public VendrEntityServiceConnectorBase(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor)
         {
             _vendrApi = vendrApi;
+            _settingsAccessor = settingsAccessor;
         }
 
         public abstract string GetEntityName(TEntity entity);

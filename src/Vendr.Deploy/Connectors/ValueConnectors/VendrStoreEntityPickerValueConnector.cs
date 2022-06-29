@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
+using Vendr.Deploy.Configuration;
 
 #if NETFRAMEWORK
 using Umbraco.Core;
@@ -23,14 +24,16 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
     {
         private readonly IDataTypeService _dataTypeService;
         private readonly IVendrApi _venderApi;
+        private readonly VendrDeploySettingsAccessor _settingsAccessor;
 
         public IEnumerable<string> PropertyEditorAliases => new[] { "Vendr.StoreEntityPicker" };
 
         public VendrStoreEntityPickerValueConnector(IDataTypeService dataTypeService,
-            IVendrApi venderApi)
+            IVendrApi venderApi, VendrDeploySettingsAccessor settingsAccessor)
         {
             _dataTypeService = dataTypeService;
             _venderApi = venderApi;
+            _settingsAccessor = settingsAccessor;
         }
 
         public string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
