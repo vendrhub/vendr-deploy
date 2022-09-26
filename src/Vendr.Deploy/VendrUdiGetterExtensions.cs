@@ -1,10 +1,5 @@
 ﻿using Vendr.Core.Models;
-
-#if NETFRAMEWORK
-using Umbraco.Core;
-#else
 using Umbraco.Cms.Core;
-#endif
 
 namespace Vendr.Deploy
 {

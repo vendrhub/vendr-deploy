@@ -1,18 +1,11 @@
 ﻿using Vendr.Core.Events;
 using Vendr.Core.Models;
 
-#if NETFRAMEWORK
-using Umbraco.Core.Composing;
-using Umbraco.Core.Deploy;
-using Umbraco.Deploy;
-using Umbraco.Deploy.Connectors.ServiceConnectors;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Deploy.Infrastructure.Disk;
 using Umbraco.Deploy.Core.Connectors.ServiceConnectors;
-#endif
 
 namespace Vendr.Deploy.Composing
 {
@@ -38,21 +31,6 @@ namespace Vendr.Deploy.Composing
 
         private void InitializeFormsDiskRefreshers()
         {
-#if NET
-            // Register the UDI types before we register anything else
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.Store, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.OrderStatus, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.ShippingMethod, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.PaymentMethod, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.Country, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.Region, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.Currency, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.TaxClass, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.EmailTemplate, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.PrintTemplate, UdiType.GuidUdi);
-            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.ExportTemplate, UdiType.GuidUdi);
-#endif
-
             // Add in Forms Entities as valid Disk entities that can be written out	
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Store);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.OrderStatus);

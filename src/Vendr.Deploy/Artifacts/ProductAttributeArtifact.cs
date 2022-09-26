@@ -1,12 +1,6 @@
 ﻿using System.Collections.Generic;
-
-#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
-#endif
 
 namespace Vendr.Deploy.Artifacts
 {
@@ -23,7 +17,7 @@ namespace Vendr.Deploy.Artifacts
             get => Code;
         }
 
-        public TranslatedValueArtifact<string> Name { get; set; }
+        public new TranslatedValueArtifact<string> Name { get; set; }
         public IEnumerable<ProductAttributeValueArtifact> Values { get; set; }
         public int SortOrder { get; set; }
     }

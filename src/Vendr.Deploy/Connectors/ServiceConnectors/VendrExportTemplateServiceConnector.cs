@@ -4,14 +4,8 @@ using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
 using Vendr.Deploy.Configuration;
-
-#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
-#endif
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
@@ -87,7 +81,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         private void Pass2(ArtifactDeployState<ExportTemplateArtifact, ExportTemplateReadOnly> state, IDeployContext context)
         {
-            using (var uow = _vendrApi.Uow.Create())
+            _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
 
@@ -107,7 +101,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 _vendrApi.SaveExportTemplate(entity);
 
                 uow.Complete();
-            }
+            });
         }
     }
 }

@@ -8,17 +8,6 @@ using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
 using Vendr.Deploy.Connectors.ServiceConnectors;
 using Vendr.Deploy.Configuration;
-
-#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-using Umbraco.Core.Logging;
-using Umbraco.Core.Serialization;
-using Umbraco.Core.Services;
-using Umbraco.Deploy.Connectors.ValueConnectors.Services;
-using Umbraco.Deploy.Contrib.Connectors.ValueConnectors;
-using IPropertyType = Umbraco.Core.Models.PropertyType;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Cms.Core.Models;
@@ -28,7 +17,6 @@ using Umbraco.Deploy.Core.Connectors.ValueConnectors.Services;
 using Umbraco.Deploy.Contrib.ValueConnectors;
 using Umbraco.Extensions;
 using Microsoft.Extensions.Logging;
-#endif
 
 namespace Vendr.Deploy.Connectors.ValueConnectors
 {
@@ -44,11 +32,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
         public VendrVariantsEditorValueConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor,
             IContentTypeService contentTypeService, Lazy<ValueConnectorCollection> valueConnectors,
-#if NETFRAMEWORK
-            ILogger logger)
-#else
             ILogger<VendrVariantsEditorValueConnector> logger)
-#endif
             : base(contentTypeService, valueConnectors, logger)
         {
             _vendrApi = vendrApi;
@@ -119,7 +103,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
                 if (baseValue.ProductAttributes != null)
                 {
-                    using (var uow = _vendrApi.Uow.Create())
+                    _vendrApi.Uow.Execute(uow =>
                     {
                         foreach (var artifact in baseValue.ProductAttributes)
                         {
@@ -138,8 +122,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                         }
 
                         uow.Complete();
-                    }
-
+                    });
 
                 }
             }

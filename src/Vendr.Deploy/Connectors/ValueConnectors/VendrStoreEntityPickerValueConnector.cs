@@ -4,19 +4,11 @@ using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Configuration;
 
-#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-using Umbraco.Core.Models;
-using Umbraco.Core.Services;
-using IPropertyType = Umbraco.Core.Models.PropertyType;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Cms.Core.Models;
 using Umbraco.Cms.Core.Services;
 using Umbraco.Extensions;
-#endif
 
 namespace Vendr.Deploy.Connectors.ValueConnectors
 {

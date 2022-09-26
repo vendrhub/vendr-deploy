@@ -4,20 +4,11 @@ using System.Linq;
 using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Configuration;
-
-#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-using Umbraco.Deploy.Artifacts;
-using Umbraco.Deploy.Connectors.ServiceConnectors;
-using Umbraco.Deploy.Exceptions;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Deploy.Core.Exceptions;
 using Umbraco.Deploy.Infrastructure.Artifacts;
 using Umbraco.Deploy.Infrastructure.Connectors.ServiceConnectors;
-#endif
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net472;net6.0</TargetFrameworks>
+        <TargetFrameworks>net6.0</TargetFrameworks>
         <Authors>Vendr, Outfield Digital Ltd</Authors>
         <Company>Outfield Digital Ltd</Company>
         <Copyright>Outfield Digital Ltd</Copyright>
@@ -9,21 +9,13 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://vendr.net</PackageProjectUrl>
         <PackageIcon>logo-128.png</PackageIcon>
-        <RepositoryUrl>https://github.com/vendrhub/vendr-payment-provider-stripe</RepositoryUrl>
+        <RepositoryUrl>https://github.com/vendrhub/vendr-deploy</RepositoryUrl>
         <PackageTags>umbraco, vendr, ecommerce, deploy</PackageTags>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Vendr.Umbraco.Startup" Version="2.0.0" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
-        <PackageReference Include="UmbracoDeploy" Version="4.2.0" />
-        <PackageReference Include="UmbracoDeploy.Contrib" Version="4.1.0" />
-    </ItemGroup>
-
-    <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+        <PackageReference Include="Vendr.Umbraco.Startup" Version="3.0.0" />
         <PackageReference Include="Umbraco.Deploy.Infrastructure" Version="10.0.1" />
         <PackageReference Include="Umbraco.Deploy.Contrib" Version="10.0.0" />
     </ItemGroup>

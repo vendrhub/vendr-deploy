@@ -1,8 +1,4 @@
-﻿#if NETFRAMEWORK
-using Umbraco.Core;
-#else
-using Umbraco.Cms.Core;
-#endif
+﻿using Umbraco.Cms.Core;
 
 namespace Vendr.Deploy.Artifacts
 {

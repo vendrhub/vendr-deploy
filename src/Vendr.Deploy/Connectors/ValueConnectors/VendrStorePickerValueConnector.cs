@@ -2,16 +2,9 @@
 using System.Collections.Generic;
 using Vendr.Core.Api;
 using Vendr.Deploy.Configuration;
-
-#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-using IPropertyType = Umbraco.Core.Models.PropertyType;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Cms.Core.Models;
-#endif
 
 namespace Vendr.Deploy.Connectors.ValueConnectors
 {

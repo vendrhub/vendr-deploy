@@ -1,10 +1,5 @@
 ﻿using System;
 
-#if NETFRAMEWORK
-using System.Configuration;
-using System.Linq;
-#endif
-
 namespace Vendr.Deploy.Configuration
 {
     public class VendrDeploySettings
@@ -23,13 +18,7 @@ namespace Vendr.Deploy.Configuration
 
         public VendrDeployPaymentMethodSettings()
         {
-#if NETFRAMEWORK
-            IgnoreSettings = (ConfigurationManager.AppSettings["Vendr.Deploy:PaymentMethods:IgnoreSettings"] ?? "")
-                .Split(new[] { "," }, System.StringSplitOptions.RemoveEmptyEntries)
-                .ToArray();
-#else
             IgnoreSettings = Array.Empty<string>();
-#endif
         }
     }
 }

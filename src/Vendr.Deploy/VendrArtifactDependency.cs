@@ -1,10 +1,5 @@
-﻿#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-#else
-using Umbraco.Cms.Core;
+﻿using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
-#endif
 
 namespace Vendr.Deploy
 {

@@ -1,8 +1,4 @@
-﻿#if NETFRAMEWORK
-using Umbraco.Core;
-#else
-using Umbraco.Cms.Core;
-#endif
+﻿using Umbraco.Cms.Core;
 
 namespace Vendr.Deploy
 {
@@ -10,11 +6,7 @@ namespace Vendr.Deploy
     {
         public static bool TryParseGuidUdi(string input, out GuidUdi udi)
         {
-#if NETFRAMEWORK
-            return GuidUdi.TryParse(input, out udi);
-#else
             return UdiParser.TryParse<GuidUdi>(input, out udi);
-#endif
         }
     }
 }

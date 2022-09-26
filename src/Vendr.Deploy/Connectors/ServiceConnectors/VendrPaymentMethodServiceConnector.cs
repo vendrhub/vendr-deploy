@@ -5,16 +5,10 @@ using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
 using Vendr.Deploy.Configuration;
-
-using StringExtensions = Vendr.Extensions.StringExtensions;
-
-#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
-#endif
+
+using StringExtensions = Vendr.Extensions.StringExtensions;
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
@@ -190,7 +184,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         private void Pass2(ArtifactDeployState<PaymentMethodArtifact, PaymentMethodReadOnly> state, IDeployContext context)
         {
-            using (var uow = _vendrApi.Uow.Create())
+            _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
 
@@ -211,12 +205,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 state.Entity = entity;
 
                 uow.Complete();
-            }
+            });
         }
 
         private void Pass4(ArtifactDeployState<PaymentMethodArtifact, PaymentMethodReadOnly> state, IDeployContext context)
         {
-            using (var uow = _vendrApi.Uow.Create())
+            _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
                 var entity = state.Entity.AsWritable(uow);
@@ -324,7 +318,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 _vendrApi.SavePaymentMethod(entity);
 
                 uow.Complete();
-            }
+            });
         }
     }
 }

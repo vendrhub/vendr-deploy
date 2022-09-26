@@ -7,15 +7,9 @@ using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
 using Vendr.Deploy.Configuration;
 
-#if NETFRAMEWORK
-using Umbraco.Core;
-using Umbraco.Core.Deploy;
-using Umbraco.Core.Services;
-#else
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Cms.Core.Services;
-#endif
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
@@ -63,6 +57,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection();
 
+#pragma warning disable CS0618 // OrderEditorConfig is obsolete
             var artifact = new StoreArtifact(udi, dependencies)
             {
                 Name = entity.Name,
@@ -81,6 +76,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 GiftCardActivationMethod = (int)entity.GiftCardActivationMethod,
                 OrderEditorConfig = entity.OrderEditorConfig
             };
+#pragma warning restore CS0618 // OrderEditorConfig is obsolete
 
             // Base currency
             if (entity.BaseCurrencyId.HasValue)
@@ -240,7 +236,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         private void Pass1(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context)
         {
-            using (var uow = _vendrApi.Uow.Create())
+            _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
 
@@ -249,6 +245,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 var entity = state.Entity?.AsWritable(uow)
                     ?? Store.Create(uow, artifact.Udi.Guid, artifact.Alias, artifact.Name, false);
 
+#pragma warning disable CS0618 // SetOrderEditorConfig is obsolete
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetPriceTaxInclusivity(artifact.PricesIncludeTax)
                     .SetCartNumberTemplate(artifact.CartNumberTemplate)
@@ -263,6 +260,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     .SetGiftCardActivationMethod((GiftCardActivationMethod)artifact.GiftCardActivationMethod)
                     .SetOrderEditorConfig(artifact.OrderEditorConfig)
                     .SetSortOrder(artifact.SortOrder);
+#pragma warning restore CS0618 // SetOrderEditorConfig is obsolete
 
                 if (artifact.CookieTimeout.HasValue)
                 {
@@ -298,12 +296,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 state.Entity = entity;
 
                 uow.Complete();
-            }
+            });
         }
 
         private void Pass4(ArtifactDeployState<StoreArtifact, StoreReadOnly> state, IDeployContext context)
         {
-            using (var uow = _vendrApi.Uow.Create())
+            _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
                 var entity = state.Entity.AsWritable(uow);
@@ -422,7 +420,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 _vendrApi.SaveStore(entity);
 
                 uow.Complete();
-            }
+            });
         }
     }
 }
