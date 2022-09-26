@@ -22,7 +22,7 @@ class Build : NukeBuild
     [Solution]
     readonly Solution Solution;
 
-    [GitVersion(Framework = "net5.0")]
+    [GitVersion(Framework = "net6.0")]
     readonly GitVersion GitVersion;
 
     readonly string ProjectName = "Vendr.Deploy";
