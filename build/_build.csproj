@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -13,7 +13,7 @@
     <ItemGroup>
         <PackageReference Include="Nuke.Common" Version="6.2.1" />
         <PackageDownload Include="NuGet.CommandLine" Version="[5.9.1]" />
-        <PackageDownload Include="GitVersion.Tool" Version="[5.6.7]" />
+        <PackageDownload Include="GitVersion.Tool" Version="[5.10.3]" />
         <PackageDownload Include="Umbraco.Tools.Packages" Version="[1.0.1]" />
     </ItemGroup>
 
