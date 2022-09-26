@@ -34,9 +34,17 @@ stages:
         displayName: 'Build'
         dependsOn: [ ]
         steps:
+              
+          - task: UseDotNet@2
+            displayName: 'Use .NET Core sdk 6.0.x'
+            inputs:
+               version: 6.0.x
+               # includePreviewVersions: true
+
           - task: CmdLine@2
             inputs:
               script: './build.cmd Pack'
+
           - task: PublishBuildArtifacts@1
             inputs:
               pathToPublish: './artifacts'
@@ -58,12 +66,6 @@ stages:
           runOnce:
             deploy:
               steps:
-              
-                  - task: UseDotNet@2
-                    displayName: 'Use .NET Core sdk 6.0.x'
-                    inputs:
-                      version: 6.0.x
-                      # includePreviewVersions: true
 
                   # Unstable Deploy
                   - task: NuGetCommand@2
