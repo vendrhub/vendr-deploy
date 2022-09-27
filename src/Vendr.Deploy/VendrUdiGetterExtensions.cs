@@ -49,6 +49,9 @@ namespace Vendr.Deploy
             if (entity is ProductAttributeReadOnly productAtrtibtue)
                 return productAtrtibtue.GetUdi();
 
+            if (entity is ProductAttributeReadOnly productAtrtibtuePreset)
+                return productAtrtibtuePreset.GetUdi();
+
             return null;
         }
 
@@ -93,5 +96,8 @@ namespace Vendr.Deploy
 
         public static GuidUdi GetUdi(this ProductAttributeReadOnly entity)
             => new GuidUdi(VendrConstants.UdiEntityType.ProductAttribute, entity.Id);
+
+        public static GuidUdi GetUdi(this ProductAttributePresetReadOnly entity)
+            => new GuidUdi(VendrConstants.UdiEntityType.ProductAttributePreset, entity.Id);
     }
 }

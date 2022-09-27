@@ -4,10 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vendr.Core.Api;
-using Vendr.Core.Models;
-using Vendr.Deploy.Artifacts;
-using Vendr.Deploy.Connectors.ServiceConnectors;
-using Vendr.Deploy.Configuration;
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Cms.Core.Models;
@@ -26,17 +22,16 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
     public class VendrVariantsEditorValueConnector : BlockEditorValueConnector, IValueConnector
     {
         private readonly IVendrApi _vendrApi;
-        private readonly VendrProductAttributeServiceConnector _productAttributeServiceConnector;
 
         public override IEnumerable<string> PropertyEditorAliases => new[] { "Vendr.VariantsEditor" };
 
-        public VendrVariantsEditorValueConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor,
-            IContentTypeService contentTypeService, Lazy<ValueConnectorCollection> valueConnectors,
+        public VendrVariantsEditorValueConnector(IVendrApi vendrApi, 
+            IContentTypeService contentTypeService, 
+            Lazy<ValueConnectorCollection> valueConnectors,
             ILogger<VendrVariantsEditorValueConnector> logger)
             : base(contentTypeService, valueConnectors, logger)
         {
             _vendrApi = vendrApi;
-            _productAttributeServiceConnector = new VendrProductAttributeServiceConnector(vendrApi, settingsAccessor);
         }
 
         public new string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
@@ -68,20 +63,14 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
                 var productAttributeAliases = blockEditorValue.Layout.Items.SelectMany(x => x.Config.Attributes.Keys)
                     .Distinct();
 
-                var productAttributeArtifacts = new List<ProductAttributeArtifact>();
-
                 foreach (var productAttributeAlias in productAttributeAliases)
                 {
                     var productAttribute = _vendrApi.GetProductAttribute(blockEditorValue.StoreId.Value, productAttributeAlias);
                     if (productAttribute != null)
                     {
-                        var paArtifact = _productAttributeServiceConnector.GetArtifact(productAttribute.GetUdi(), productAttribute);
-
-                        productAttributeArtifacts.Add(paArtifact);
+                        dependencies.Add(new VendrArtifactDependency(productAttribute.GetUdi()));
                     }
                 }
-
-                blockEditorValue.ProductAttributes = productAttributeArtifacts;
 
                 artifact = JsonConvert.SerializeObject(blockEditorValue);
             }
@@ -91,55 +80,19 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
 
         public new object FromArtifact(string value, IPropertyType propertyType, object currentValue)
         {
-            BaseValue baseValue = null;
+            var entity = base.FromArtifact(value, propertyType, currentValue);
 
-            if (!string.IsNullOrWhiteSpace(value) && value.DetectIsJson())
+            var jObj = entity as JObject;
+            if (jObj != null && !string.IsNullOrWhiteSpace(value) && value.DetectIsJson())
             {
-                baseValue = JsonConvert.DeserializeObject<BaseValue>(value);
-
-                // We can't currently deploy custom entities via deploy so we fudge it by appending the
-                // product attributes to the serialized data or of property value. We then process
-                // these attributes ourselves
-
-                if (baseValue.ProductAttributes != null)
+                var baseValue = JsonConvert.DeserializeObject<BaseValue>(value);
+                if (baseValue != null && baseValue.StoreId.HasValue)
                 {
-                    _vendrApi.Uow.Execute(uow =>
-                    {
-                        foreach (var artifact in baseValue.ProductAttributes)
-                        {
-                            artifact.Udi.EnsureType(VendrConstants.UdiEntityType.ProductAttribute);
-                            artifact.StoreUdi.EnsureType(VendrConstants.UdiEntityType.Store);
-
-                            var attrEntity = _vendrApi.GetProductAttribute(artifact.Udi.Guid)?.AsWritable(uow) ?? ProductAttribute.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Alias, artifact.Name.DefaultValue);
-
-                            attrEntity.SetAlias(artifact.Alias)
-                                .SetName(new TranslatedValue<string>(artifact.Name.DefaultValue, artifact.Name.Translations))
-                                .SetValues(artifact.Values.Select(x => new KeyValuePair<string, TranslatedValue<string>>(x.Alias,
-                                    new TranslatedValue<string>(x.Name.DefaultValue, x.Name.Translations))))
-                                .SetSortOrder(artifact.SortOrder);
-
-                            _vendrApi.SaveProductAttribute(attrEntity);
-                        }
-
-                        uow.Complete();
-                    });
-
+                    jObj["storeId"] = baseValue.StoreId.Value;
                 }
             }
 
-            var entity = base.FromArtifact(value, propertyType, currentValue);
-
-            // The base call to FromAtrtifact will have stripped off the storeId property
-            // held in the root of the property value so we need to re-parse the original
-            // value and extract the store ID, appending it back onto the JObject
-
-            var jObj = entity as JObject;
-            if (jObj != null && baseValue != null && baseValue.StoreId.HasValue)
-            {
-                jObj["storeId"] = baseValue.StoreId.Value;
-            }
-
-            return entity;
+            return jObj ?? entity;
         }
 
         object IValueConnector.FromArtifact(string value, IPropertyType propertyType, object currentValue)
@@ -152,9 +105,6 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
         {
             [JsonProperty("storeId")]
             public Guid? StoreId { get; set; }
-
-            [JsonProperty("productAttributes")]
-            public IEnumerable<ProductAttributeArtifact> ProductAttributes { get; set; }
         }
 
         public class VariantsBlockEditorValue : BaseValue

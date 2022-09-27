@@ -6,6 +6,14 @@ using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Deploy.Infrastructure.Disk;
 using Umbraco.Deploy.Core.Connectors.ServiceConnectors;
+using Umbraco.Deploy.Infrastructure.Transfer;
+using Microsoft.AspNetCore.Http;
+using System;
+using System.Text.RegularExpressions;
+
+using StaticServiceProvider = Umbraco.Cms.Web.Common.DependencyInjection.StaticServiceProvider;
+using Microsoft.Extensions.DependencyInjection;
+using Umbraco.Extensions;
 
 namespace Vendr.Deploy.Composing
 {
@@ -13,12 +21,15 @@ namespace Vendr.Deploy.Composing
     {
         private readonly IDiskEntityService _diskEntityService;
         private readonly IServiceConnectorFactory _serviceConnectorFactory;
+        private readonly ITransferEntityService _transferEntityService;
 
         public VendrDeployComponent(IDiskEntityService diskEntityService,
-            IServiceConnectorFactory serviceConnectorFactory)
+            IServiceConnectorFactory serviceConnectorFactory,
+            ITransferEntityService transferEntityService)
         {
             _diskEntityService = diskEntityService;
             _serviceConnectorFactory = serviceConnectorFactory;
+            _transferEntityService = transferEntityService;
         }
 
         public void Initialize()
@@ -31,7 +42,7 @@ namespace Vendr.Deploy.Composing
 
         private void InitializeFormsDiskRefreshers()
         {
-            // Add in Forms Entities as valid Disk entities that can be written out	
+            // Add in settings entities as valid Disk entities that can be written out	
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Store);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.OrderStatus);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.ShippingMethod);
@@ -43,6 +54,57 @@ namespace Vendr.Deploy.Composing
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.EmailTemplate);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.PrintTemplate);
             _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.ExportTemplate);
+
+            // Add in integrated transfer entities
+            _transferEntityService.RegisterTransferEntityType(
+                VendrConstants.UdiEntityType.ProductAttribute,
+                "Product Attributes",
+                new DeployRegisteredEntityTypeDetailOptions
+                {
+                    SupportsQueueForTransfer = true,
+                    SupportsQueueForTransferOfDescendents = true,
+                    SupportsRestore = true,
+                    PermittedToRestore = true,
+                    SupportsPartialRestore = true,
+                },
+                false,
+                Umbraco.Constants.Trees.Stores.Alias,
+                (string routePath) => Regex.IsMatch(routePath, $"^-1/[^/]+/10/11"),
+                (string nodeId) =>
+                {
+                    var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    var nodeType = httpContext.Request.Query["nodeType"].ToString();
+
+                    return nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributes.ToString())
+                        || nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttribute.ToString());
+                },
+                (string nodeId, HttpContext httpContext, out Guid entityId) => Guid.TryParse(nodeId, out entityId));
+            // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
+
+            _transferEntityService.RegisterTransferEntityType(
+                VendrConstants.UdiEntityType.ProductAttributePreset,
+                "Product Attribute Presets",
+                new DeployRegisteredEntityTypeDetailOptions
+                {
+                    SupportsQueueForTransfer = true,
+                    SupportsQueueForTransferOfDescendents = true,
+                    SupportsRestore = true,
+                    PermittedToRestore = true,
+                    SupportsPartialRestore = true,
+                },
+                false,
+                Umbraco.Constants.Trees.Stores.Alias,
+                (string routePath) => Regex.IsMatch(routePath, $"^-1/[^/]+/10/12"),
+                (string nodeId) =>
+                {
+                    var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    var nodeType = httpContext.Request.Query["nodeType"].ToString();
+
+                    return nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePresets.ToString())
+                        || nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePreset.ToString());
+                },
+                (string nodeId, HttpContext httpContext, out Guid entityId) => Guid.TryParse(nodeId, out entityId));
+            // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
 
             // TODO: Other entities
 

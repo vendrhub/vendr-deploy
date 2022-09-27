@@ -31,6 +31,8 @@
             public const string GiftCard = "vendr-gift-card";
 
             public const string ProductAttribute = "vendr-product-attribute";
+
+            public const string ProductAttributePreset = "vendr-product-attribute-preset";
         }
     }
 }

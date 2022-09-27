@@ -16,7 +16,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
     {
         public override int[] ProcessPasses => new[]
         {
-            2
+            3
         };
 
         public override string[] ValidOpenSelectors => new[]
@@ -83,15 +83,15 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             switch (pass)
             {
-                case 2:
-                    Pass2(state, context);
+                case 3:
+                    Pass3(state, context);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(pass));
             }
         }
 
-        private void Pass2(ArtifactDeployState<ProductAttributeArtifact, ProductAttributeReadOnly> state, IDeployContext context)
+        private void Pass3(ArtifactDeployState<ProductAttributeArtifact, ProductAttributeReadOnly> state, IDeployContext context)
         {
             _vendrApi.Uow.Execute(uow =>
             {
