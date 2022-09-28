@@ -305,7 +305,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
-                var entity = state.Entity.AsWritable(uow);
+                var entity = _vendrApi.GetStore(state.Entity.Id).AsWritable(uow);
 
                 // BaseCurrency
                 Guid? baseCurrencyId = null;

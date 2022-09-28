@@ -7,7 +7,6 @@ using Umbraco.Deploy.Core.Connectors.ServiceConnectors;
 using Umbraco.Deploy.Infrastructure.Transfer;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Extensions;
 
@@ -75,7 +74,7 @@ namespace Vendr.Deploy.Composing
                 },
                 false,
                 Umbraco.Constants.Trees.Stores.Alias,
-                (string routePath) => routePath.StartsWith("commerce/vendr/productattribute-"), // Regex.IsMatch(routePath, $" ^ -1/[^/]+/10/11"),
+                (string routePath) => routePath.StartsWith("commerce/vendr/productattribute-"),
                 (string nodeId) =>
                 {
                     var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;

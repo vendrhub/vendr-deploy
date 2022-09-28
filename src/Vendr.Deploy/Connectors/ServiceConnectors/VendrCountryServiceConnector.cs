@@ -141,7 +141,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
-                var entity = state.Entity.AsWritable(uow);
+                var entity = _vendrApi.GetCountry(state.Entity.Id).AsWritable(uow);
 
                 if (artifact.DefaultCurrencyUdi != null)
                 {

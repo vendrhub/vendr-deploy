@@ -133,7 +133,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
-                var entity = state.Entity.AsWritable(uow);
+                var entity = _vendrApi.GetProductAttributePreset(state.Entity.Id).AsWritable(uow);
 
                 var productAttributeAliasMap = _vendrApi.GetProductAttributes(artifact.AllowedAttributes.Select(x => x.ProductAttributeUdi.Guid).ToArray())
                     .ToDictionary(x => x.Id, x => x);

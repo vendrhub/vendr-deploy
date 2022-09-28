@@ -203,7 +203,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             _vendrApi.Uow.Execute(uow =>
             {
                 var artifact = state.Artifact;
-                var entity = state.Entity.AsWritable(uow);
+                var entity = _vendrApi.GetShippingMethod(state.Entity.Id).AsWritable(uow);
 
                 // TaxClass
                 if (artifact.TaxClassUdi != null)
