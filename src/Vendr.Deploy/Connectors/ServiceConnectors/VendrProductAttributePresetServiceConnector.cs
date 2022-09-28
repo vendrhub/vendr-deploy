@@ -22,13 +22,16 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string[] ValidOpenSelectors => new[]
         {
+            "this",
             "this-and-descendants",
             "descendants"
         };
 
-        public override string AllEntitiesRangeName => "ALL VENDR PRODUCT ATTRIBUTE PRESET";
+        public override string AllEntitiesRangeName => "All Vendr Product Attribute Presets";
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.ProductAttributePreset;
+
+        public override string ContainerId => Umbraco.Constants.Trees.Stores.Ids[Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePresets].ToInvariantString();
 
         public VendrProductAttributePresetServiceConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor)
             : base(vendrApi, settingsAccessor)

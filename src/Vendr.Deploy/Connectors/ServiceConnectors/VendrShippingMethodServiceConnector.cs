@@ -21,11 +21,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string[] ValidOpenSelectors => new[]
         {
+            "this",
             "this-and-descendants",
             "descendants"
         };
 
-        public override string AllEntitiesRangeName => "ALL VENDR SHIPPING METHODS";
+        public override string AllEntitiesRangeName => "All Vendr Shipping Methods";
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.ShippingMethod;
 

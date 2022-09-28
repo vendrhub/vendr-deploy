@@ -27,6 +27,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public abstract string UdiEntityType { get; }
 
+        public virtual string ContainerId => "-1";
+
         public VendrEntityServiceConnectorBase(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor)
         {
             _vendrApi = vendrApi;
@@ -77,7 +79,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override NamedUdiRange GetRange(string entityType, string sid, string selector)
         {
-            if (sid == "-1")
+            if (sid == "-1" || sid == ContainerId)
             {
                 EnsureSelector(selector, ValidOpenSelectors);
 

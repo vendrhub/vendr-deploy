@@ -5,9 +5,9 @@ using Vendr.Core.Api;
 using Vendr.Core.Models;
 using Vendr.Deploy.Artifacts;
 using Vendr.Deploy.Configuration;
-
 using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Deploy;
+using Umbraco.Extensions;
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
@@ -20,14 +20,17 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
         };
 
         public override string[] ValidOpenSelectors => new[]
-        {
+        { 
+            "this",
             "this-and-descendants",
             "descendants"
         };
 
-        public override string AllEntitiesRangeName => "ALL VENDR PRODUCT ATTRIBUTE";
+        public override string AllEntitiesRangeName => "All Vendr Product Attributes";
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.ProductAttribute;
+
+        public override string ContainerId => Umbraco.Constants.Trees.Stores.Ids[Umbraco.Constants.Trees.Stores.NodeType.ProductAttributes].ToInvariantString();
 
         public VendrProductAttributeServiceConnector(IVendrApi vendrApi, VendrDeploySettingsAccessor settingsAccessor)
             : base(vendrApi, settingsAccessor)

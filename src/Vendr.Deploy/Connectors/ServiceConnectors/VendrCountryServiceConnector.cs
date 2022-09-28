@@ -19,11 +19,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string[] ValidOpenSelectors => new[]
         {
+            "this",
             "this-and-descendants",
             "descendants"
         };
 
-        public override string AllEntitiesRangeName => "ALL VENDR COUNTRIES";
+        public override string AllEntitiesRangeName => "All Vendr Countries";
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.Country;
 

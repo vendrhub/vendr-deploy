@@ -25,11 +25,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string[] ValidOpenSelectors => new[]
         {
+            "this",
             "this-and-descendants",
             "descendants"
         };
 
-        public override string AllEntitiesRangeName => "ALL STORED";
+        public override string AllEntitiesRangeName => "All Vendr Stores";
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.Store;
 

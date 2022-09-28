@@ -20,11 +20,12 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public override string[] ValidOpenSelectors => new[]
         {
+            "this",
             "this-and-descendants",
             "descendants"
         };
 
-        public override string AllEntitiesRangeName => "ALL VENDR PRINT TEMPLATE";
+        public override string AllEntitiesRangeName => "All Vendr Print Templates";
 
         public override string UdiEntityType => VendrConstants.UdiEntityType.PrintTemplate;
 

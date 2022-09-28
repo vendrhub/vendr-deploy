@@ -49,7 +49,7 @@ namespace Vendr.Deploy
             if (entity is ProductAttributeReadOnly productAtrtibtue)
                 return productAtrtibtue.GetUdi();
 
-            if (entity is ProductAttributeReadOnly productAtrtibtuePreset)
+            if (entity is ProductAttributePresetReadOnly productAtrtibtuePreset)
                 return productAtrtibtuePreset.GetUdi();
 
             return null;

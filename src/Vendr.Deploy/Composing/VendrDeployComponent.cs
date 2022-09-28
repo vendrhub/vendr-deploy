@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Extensions;
 
 using StaticServiceProvider = Umbraco.Cms.Web.Common.DependencyInjection.StaticServiceProvider;
+using Umbraco.Cms.Core;
 
 namespace Vendr.Deploy.Composing
 {
@@ -32,12 +33,31 @@ namespace Vendr.Deploy.Composing
 
         public void Initialize()
         {
+            RegisterUdiTypes();
             InitializeDiskRefreshers();
             InitializeIntegratedEntities();
         }
 
         public void Terminate()
         { }
+
+        private void RegisterUdiTypes()
+        {
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.Store, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.OrderStatus, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.ShippingMethod, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.PaymentMethod, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.Country, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.Region, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.Currency, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.TaxClass, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.EmailTemplate, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.PrintTemplate, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.ExportTemplate, UdiType.GuidUdi);
+
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.ProductAttribute, UdiType.GuidUdi);
+            UdiParser.RegisterUdiType(VendrConstants.UdiEntityType.ProductAttributePreset, UdiType.GuidUdi);
+        }
 
         private void InitializeIntegratedEntities()
         {
@@ -55,7 +75,7 @@ namespace Vendr.Deploy.Composing
                 },
                 false,
                 Umbraco.Constants.Trees.Stores.Alias,
-                (string routePath) => Regex.IsMatch(routePath, $"^-1/[^/]+/10/11"),
+                (string routePath) => routePath.StartsWith("commerce/vendr/productattribute-"), // Regex.IsMatch(routePath, $" ^ -1/[^/]+/10/11"),
                 (string nodeId) =>
                 {
                     var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;
@@ -80,7 +100,7 @@ namespace Vendr.Deploy.Composing
                 },
                 false,
                 Umbraco.Constants.Trees.Stores.Alias,
-                (string routePath) => Regex.IsMatch(routePath, $"^-1/[^/]+/10/12"),
+                (string routePath) => routePath.StartsWith("commerce/vendr/productattributepreset-"),
                 (string nodeId) =>
                 {
                     var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;
