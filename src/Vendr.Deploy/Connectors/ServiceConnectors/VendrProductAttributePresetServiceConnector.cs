@@ -120,6 +120,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 entity.SetAlias(artifact.Alias)
                     .SetName(artifact.Name)
+                    .SetIcon(artifact.Icon)
+                    .SetDescription(artifact.Description)
                     .SetSortOrder(artifact.SortOrder);
 
                 _vendrApi.SaveProductAttributePreset(entity);
