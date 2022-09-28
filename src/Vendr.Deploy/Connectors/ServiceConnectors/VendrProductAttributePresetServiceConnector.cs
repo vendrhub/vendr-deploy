@@ -81,6 +81,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 Name = entity.Name,
                 Code = entity.Alias,
+                Icon = entity.Icon,
+                Description = entity.Description,
                 AllowedAttributes = allowedAttributes,
                 SortOrder = entity.SortOrder
             };

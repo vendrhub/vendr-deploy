@@ -16,6 +16,8 @@ namespace Vendr.Deploy.Artifacts
         {
             get => Code;
         }
+        public string Icon { get; set; }
+        public string Description { get; set; }
 
         public IEnumerable<AllowedProductAttributeArtifact> AllowedAttributes { get; set; }
         public int SortOrder { get; set; }
