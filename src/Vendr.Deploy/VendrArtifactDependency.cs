@@ -5,7 +5,7 @@ namespace Vendr.Deploy
 {
     public class VendrArtifactDependency : ArtifactDependency
     {
-        public VendrArtifactDependency(Udi udi, ArtifactDependencyMode mode = ArtifactDependencyMode.Match)
+        public VendrArtifactDependency(Udi udi, ArtifactDependencyMode mode = ArtifactDependencyMode.Exist)
             : base(udi, false, mode)
         { }
     }
