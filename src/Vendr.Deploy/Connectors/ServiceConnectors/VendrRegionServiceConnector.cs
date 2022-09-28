@@ -52,7 +52,8 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
             var dependencies = new ArtifactDependencyCollection
             {
-                new VendrArtifactDependency(storeUdi)
+                new VendrArtifactDependency(storeUdi),
+                new VendrArtifactDependency(countryUdi)
             };
 
             var artifcat = new RegionArtifact(udi, storeUdi, countryUdi, dependencies)
