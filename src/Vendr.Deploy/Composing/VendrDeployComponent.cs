@@ -1,7 +1,5 @@
 ﻿using Vendr.Core.Events;
 using Vendr.Core.Models;
-
-using Umbraco.Cms.Core;
 using Umbraco.Cms.Core.Composing;
 using Umbraco.Cms.Core.Deploy;
 using Umbraco.Deploy.Infrastructure.Disk;
@@ -10,10 +8,10 @@ using Umbraco.Deploy.Infrastructure.Transfer;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Text.RegularExpressions;
-
-using StaticServiceProvider = Umbraco.Cms.Web.Common.DependencyInjection.StaticServiceProvider;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Extensions;
+
+using StaticServiceProvider = Umbraco.Cms.Web.Common.DependencyInjection.StaticServiceProvider;
 
 namespace Vendr.Deploy.Composing
 {
@@ -34,27 +32,15 @@ namespace Vendr.Deploy.Composing
 
         public void Initialize()
         {
-            InitializeFormsDiskRefreshers();
+            InitializeDiskRefreshers();
+            InitializeIntegratedEntities();
         }
 
         public void Terminate()
         { }
 
-        private void InitializeFormsDiskRefreshers()
+        private void InitializeIntegratedEntities()
         {
-            // Add in settings entities as valid Disk entities that can be written out	
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Store);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.OrderStatus);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.ShippingMethod);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.PaymentMethod);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Country);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Region);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Currency);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.TaxClass);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.EmailTemplate);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.PrintTemplate);
-            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.ExportTemplate);
-
             // Add in integrated transfer entities
             _transferEntityService.RegisterTransferEntityType(
                 VendrConstants.UdiEntityType.ProductAttribute,
@@ -79,7 +65,7 @@ namespace Vendr.Deploy.Composing
                         || nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttribute.ToString());
                 },
                 (string nodeId, HttpContext httpContext, out Guid entityId) => Guid.TryParse(nodeId, out entityId));
-            // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
+                // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
 
             _transferEntityService.RegisterTransferEntityType(
                 VendrConstants.UdiEntityType.ProductAttributePreset,
@@ -104,7 +90,23 @@ namespace Vendr.Deploy.Composing
                         || nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePreset.ToString());
                 },
                 (string nodeId, HttpContext httpContext, out Guid entityId) => Guid.TryParse(nodeId, out entityId));
-            // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
+                // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
+        }
+
+        private void InitializeDiskRefreshers()
+        {
+            // Add in settings entities as valid Disk entities that can be written out	
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Store);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.OrderStatus);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.ShippingMethod);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.PaymentMethod);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Country);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Region);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.Currency);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.TaxClass);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.EmailTemplate);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.PrintTemplate);
+            _diskEntityService.RegisterDiskEntityType(VendrConstants.UdiEntityType.ExportTemplate);
 
             // TODO: Other entities
 

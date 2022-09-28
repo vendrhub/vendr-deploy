@@ -11,6 +11,7 @@ namespace Vendr.Deploy.Composing
         {
             builder.Services.AddOptions<VendrDeploySettings>()
                 .Bind(builder.Config.GetSection("Vendr.Deploy"));
+
             builder.Services.AddSingleton<VendrDeploySettingsAccessor>();
 
             builder.Components()
