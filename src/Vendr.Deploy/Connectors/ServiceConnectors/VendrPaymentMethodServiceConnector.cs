@@ -194,10 +194,14 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
                 var entity = state.Entity?.AsWritable(uow) ?? PaymentMethod.Create(uow, artifact.Udi.Guid, artifact.StoreUdi.Guid, artifact.Alias, artifact.Name, artifact.PaymentProviderAlias);
 
+                var settings = artifact.PaymentProviderSettings
+                    .Where(x => !StringExtensions.InvariantContains(_settingsAccessor.Settings.PaymentMethods.IgnoreSettings, x.Key)) // Ignore any settings that shouldn't be transfered
+                    .ToDictionary(x => x.Key, x => x.Value);
+
                 entity.SetName(artifact.Name, artifact.Alias)
                     .SetSku(artifact.Sku)
                     .SetImage(artifact.ImageId)
-                    .SetSettings(artifact.PaymentProviderSettings, SetBehavior.Merge)
+                    .SetSettings(settings, SetBehavior.Merge)
                     .ToggleFeatures(artifact.CanFetchPaymentStatuses, artifact.CanCapturePayments, artifact.CanCancelPayments, artifact.CanRefundPayments)
                     .SetSortOrder(artifact.SortOrder);
 
