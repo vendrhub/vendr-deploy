@@ -19,7 +19,11 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
     /// <summary>
     /// A Deploy connector for the Vendr Variants Editor property editor
     /// </summary>
+#if NET7_0_OR_GREATER
+    public class VendrVariantsEditorValueConnector : BlockEditorValueConnector, IValueConnector2
+#else
     public class VendrVariantsEditorValueConnector : BlockEditorValueConnector, IValueConnector
+#endif
     {
         private readonly IVendrApi _vendrApi;
 
@@ -34,9 +38,15 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             _vendrApi = vendrApi;
         }
 
+#if NET7_0_OR_GREATER
+        public new string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies, IContextCache contextCache)
+        {
+            var artifact = base.ToArtifact(value, propertyType, dependencies, contextCache);
+#else
         public new string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
         {
             var artifact = base.ToArtifact(value, propertyType, dependencies);
+#endif
 
             if (string.IsNullOrWhiteSpace(artifact) || !artifact.DetectIsJson())
                 return null;
@@ -78,10 +88,15 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             return artifact;
         }
 
+#if NET7_0_OR_GREATER
+        public new object FromArtifact(string value, IPropertyType propertyType, object currentValue, IContextCache contextCache)
+        {
+            var entity = base.FromArtifact(value, propertyType, currentValue, contextCache);
+#else
         public new object FromArtifact(string value, IPropertyType propertyType, object currentValue)
         {
             var entity = base.FromArtifact(value, propertyType, currentValue);
-
+#endif
             var jObj = entity as JObject;
             if (jObj != null && !string.IsNullOrWhiteSpace(value) && value.DetectIsJson())
             {
@@ -95,11 +110,19 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             return jObj ?? entity;
         }
 
+#if NET7_0_OR_GREATER
+        object IValueConnector2.FromArtifact(string value, IPropertyType propertyType, object currentValue, IContextCache contextCache)
+            => FromArtifact(value, propertyType, currentValue, contextCache);
+
+        string IValueConnector2.ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies, IContextCache contextCache)
+            => ToArtifact(value, propertyType, dependencies, contextCache);
+#else
         object IValueConnector.FromArtifact(string value, IPropertyType propertyType, object currentValue)
             => FromArtifact(value, propertyType, currentValue);
 
         string IValueConnector.ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
             => ToArtifact(value, propertyType, dependencies);
+#endif
 
         public class BaseValue
         {

@@ -7,6 +7,7 @@ using Umbraco.Deploy.Core.Connectors.ServiceConnectors;
 using Umbraco.Deploy.Infrastructure.Transfer;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Extensions;
 
@@ -74,15 +75,17 @@ namespace Vendr.Deploy.Composing
                 },
                 false,
                 Umbraco.Constants.Trees.Stores.Alias,
-                (string routePath) => routePath.StartsWith("commerce/vendr/productattribute-"),
+#if NET7_0_OR_GREATER
+                (string routePath, HttpContext httpContext) => MatchesRoutePath(routePath, "productattribute"),
+                MatchesProductAttributeNodeId,
+#else
+                (string routePath) => MatchesRoutePath(routePath, "productattribute"),
                 (string nodeId) =>
                 {
                     var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    var nodeType = httpContext.Request.Query["nodeType"].ToString();
-
-                    return nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributes.ToString())
-                        || nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttribute.ToString());
+                    return MatchesProductAttributeNodeId(nodeId, httpContext);
                 },
+#endif
                 (string nodeId, HttpContext httpContext, out Guid entityId) => Guid.TryParse(nodeId, out entityId));
                 // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
 
@@ -99,17 +102,49 @@ namespace Vendr.Deploy.Composing
                 },
                 false,
                 Umbraco.Constants.Trees.Stores.Alias,
-                (string routePath) => routePath.StartsWith("commerce/vendr/productattributepreset-"),
+#if NET7_0_OR_GREATER
+                (string routePath, HttpContext httpContext) => MatchesRoutePath(routePath, "productattributepreset"),
+                MatchesProductAttributePresetNodeId,
+#else
+                (string routePath) => MatchesRoutePath(routePath, "productattributepreset"),
                 (string nodeId) =>
                 {
                     var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    var nodeType = httpContext.Request.Query["nodeType"].ToString();
-
-                    return nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePresets.ToString())
-                        || nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePreset.ToString());
+                    return MatchesProductAttributePresetNodeId(nodeId, httpContext);
                 },
+#endif
                 (string nodeId, HttpContext httpContext, out Guid entityId) => Guid.TryParse(nodeId, out entityId));
                 // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
+        }
+
+        private static bool MatchesRoutePath(string routePath, string routePartPrefix)
+            => routePath.StartsWith($"commerce/vendr/{routePartPrefix}-");
+
+        private static bool MatchesProductAttributeNodeId(string nodeId, HttpContext httpContext) =>
+            MatchesNodeId(
+                nodeId,
+                httpContext,
+                new Umbraco.Constants.Trees.Stores.NodeType[]
+                {
+                    Umbraco.Constants.Trees.Stores.NodeType.ProductAttributes,
+                    Umbraco.Constants.Trees.Stores.NodeType.ProductAttribute
+                });
+
+        private static bool MatchesProductAttributePresetNodeId(string nodeId, HttpContext httpContext) =>
+            MatchesNodeId(
+                nodeId,
+                httpContext,
+                new Umbraco.Constants.Trees.Stores.NodeType[]
+                {
+                    Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePresets,
+                    Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePreset
+                });
+
+        private static bool MatchesNodeId(string nodeId, HttpContext httpContext, Umbraco.Constants.Trees.Stores.NodeType[] nodeTypes)
+        {
+            var nodeType = httpContext.Request.Query["nodeType"].ToString();
+
+            return nodeTypes.Select(x => x.ToString()).InvariantContains(nodeType);
         }
 
         private void InitializeDiskRefreshers()

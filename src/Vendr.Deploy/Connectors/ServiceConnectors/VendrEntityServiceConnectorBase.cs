@@ -43,7 +43,11 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public abstract TArtifact GetArtifact(GuidUdi udi, TEntity entity);
 
+#if NET7_0_OR_GREATER
+        public override TArtifact GetArtifact(object o, IContextCache contextCache)
+#else
         public override TArtifact GetArtifact(object o)
+#endif
         {
             var entity = o as TEntity;
             if (entity == null)
@@ -52,7 +56,11 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             return GetArtifact(entity.GetUdi(), entity);
         }
 
+#if NET7_0_OR_GREATER
+        public override TArtifact GetArtifact(GuidUdi udi, IContextCache contextCache)
+#else
         public override TArtifact GetArtifact(GuidUdi udi)
+#endif
         {
             EnsureType(udi);
 
