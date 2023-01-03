@@ -7,12 +7,10 @@ using Umbraco.Deploy.Core.Connectors.ServiceConnectors;
 using Umbraco.Deploy.Infrastructure.Transfer;
 using Microsoft.AspNetCore.Http;
 using System;
-using Microsoft.Extensions.DependencyInjection;
 using Umbraco.Extensions;
-
-using StaticServiceProvider = Umbraco.Cms.Web.Common.DependencyInjection.StaticServiceProvider;
 using Umbraco.Cms.Core;
 using System.Linq;
+using Umbraco.Deploy.Core;
 
 namespace Vendr.Deploy.Composing
 {
@@ -192,7 +190,7 @@ namespace Vendr.Deploy.Composing
 
             return _serviceConnectorFactory
                 .GetConnector(udi.EntityType)
-                .GetArtifact(entity);
+                .GetArtifact(entity, null);
         }
     }
 }
