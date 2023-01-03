@@ -9,6 +9,7 @@ using Umbraco.Cms.Core.Deploy;
 using Umbraco.Deploy.Core.Exceptions;
 using Umbraco.Deploy.Infrastructure.Artifacts;
 using Umbraco.Deploy.Infrastructure.Connectors.ServiceConnectors;
+using Vendr.Deploy.Artifacts;
 
 namespace Vendr.Deploy.Connectors.ServiceConnectors
 {
@@ -43,7 +44,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
 
         public abstract TArtifact GetArtifact(GuidUdi udi, TEntity entity);
 
-        public override TArtifact GetArtifact(object o)
+        public override TArtifact GetArtifact(object o, IContextCache contextCache)
         {
             var entity = o as TEntity;
             if (entity == null)
@@ -52,7 +53,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             return GetArtifact(entity.GetUdi(), entity);
         }
 
-        public override TArtifact GetArtifact(GuidUdi udi)
+        public override TArtifact GetArtifact(GuidUdi udi, IContextCache contextCache)
         {
             EnsureType(udi);
 

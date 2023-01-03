@@ -12,6 +12,7 @@ using Umbraco.Extensions;
 
 using StaticServiceProvider = Umbraco.Cms.Web.Common.DependencyInjection.StaticServiceProvider;
 using Umbraco.Cms.Core;
+using System.Linq;
 
 namespace Vendr.Deploy.Composing
 {
@@ -74,15 +75,15 @@ namespace Vendr.Deploy.Composing
                 },
                 false,
                 Umbraco.Constants.Trees.Stores.Alias,
-                (string routePath) => routePath.StartsWith("commerce/vendr/productattribute-"),
-                (string nodeId) =>
-                {
-                    var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    var nodeType = httpContext.Request.Query["nodeType"].ToString();
-
-                    return nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributes.ToString())
-                        || nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttribute.ToString());
-                },
+                (string routePath, HttpContext httpContext) => MatchesRoutePath(routePath, "productattribute"),
+                (string nodeId, HttpContext httpContext) => MatchesNodeId(
+                    nodeId,
+                    httpContext,
+                    new Umbraco.Constants.Trees.Stores.NodeType[]
+                    {
+                        Umbraco.Constants.Trees.Stores.NodeType.ProductAttributes,
+                        Umbraco.Constants.Trees.Stores.NodeType.ProductAttribute
+                    }),
                 (string nodeId, HttpContext httpContext, out Guid entityId) => Guid.TryParse(nodeId, out entityId));
                 // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
 
@@ -99,17 +100,26 @@ namespace Vendr.Deploy.Composing
                 },
                 false,
                 Umbraco.Constants.Trees.Stores.Alias,
-                (string routePath) => routePath.StartsWith("commerce/vendr/productattributepreset-"),
-                (string nodeId) =>
-                {
-                    var httpContext = StaticServiceProvider.Instance.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    var nodeType = httpContext.Request.Query["nodeType"].ToString();
-
-                    return nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePresets.ToString())
-                        || nodeType.InvariantEquals(Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePreset.ToString());
-                },
+                (string routePath, HttpContext httpContext) => MatchesRoutePath(routePath, "productattributepreset"),
+                (string nodeId, HttpContext httpContext) => MatchesNodeId(
+                    nodeId,
+                    httpContext,
+                    new Umbraco.Constants.Trees.Stores.NodeType[]
+                    {
+                        Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePresets,
+                        Umbraco.Constants.Trees.Stores.NodeType.ProductAttributePreset
+                    }),
                 (string nodeId, HttpContext httpContext, out Guid entityId) => Guid.TryParse(nodeId, out entityId));
                 // TODO: , new DeployTransferRegisteredEntityTypeDetail.RemoteTreeDetail(FormsTreeHelper.GetExampleTree, "example", "externalExampleTree"));
+        }
+
+        private static bool MatchesRoutePath(string routePath, string routePartPrefix)
+            => routePath.StartsWith($"commerce/vendr/{routePartPrefix}-");
+
+        private static bool MatchesNodeId(string nodeId, HttpContext httpContext, Umbraco.Constants.Trees.Stores.NodeType[] nodeTypes)
+        {
+            var nodeType = httpContext.Request.Query["nodeType"].ToString();
+            return nodeTypes.Select(x => x.ToString()).InvariantContains(nodeType);
         }
 
         private void InitializeDiskRefreshers()

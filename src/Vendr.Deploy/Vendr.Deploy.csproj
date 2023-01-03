@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>net6.0</TargetFrameworks>
+        <TargetFrameworks>net7.0</TargetFrameworks>
         <Authors>Vendr, Outfield Digital Ltd</Authors>
         <Company>Outfield Digital Ltd</Company>
         <Copyright>Outfield Digital Ltd</Copyright>
@@ -16,8 +16,8 @@
 
     <ItemGroup>
         <PackageReference Include="Vendr.Umbraco.Startup" Version="3.0.0" />
-        <PackageReference Include="Umbraco.Deploy.Infrastructure" Version="10.0.1" />
-        <PackageReference Include="Umbraco.Deploy.Contrib" Version="10.0.0" />
+        <PackageReference Include="Umbraco.Deploy.Infrastructure" Version="11.0.0" />
+        <PackageReference Include="Umbraco.Deploy.Contrib" Version="11.0.0" />
     </ItemGroup>
 
     <!-- Workaround for this bug (replace the analyzer name with the one you need to exclude (filename only, no extension) -->
