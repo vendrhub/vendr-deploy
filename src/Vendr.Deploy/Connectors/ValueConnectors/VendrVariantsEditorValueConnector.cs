@@ -19,7 +19,7 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
     /// <summary>
     /// A Deploy connector for the Vendr Variants Editor property editor
     /// </summary>
-    public class VendrVariantsEditorValueConnector : BlockEditorValueConnector, IValueConnector
+    public class VendrVariantsEditorValueConnector : BlockEditorValueConnector, IValueConnector2
     {
         private readonly IVendrApi _vendrApi;
 
@@ -34,9 +34,9 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             _vendrApi = vendrApi;
         }
 
-        public new string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
+        public override string ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies, IContextCache contextCache)
         {
-            var artifact = base.ToArtifact(value, propertyType, dependencies);
+            var artifact = base.ToArtifact(value, propertyType, dependencies, contextCache);
 
             if (string.IsNullOrWhiteSpace(artifact) || !artifact.DetectIsJson())
                 return null;
@@ -78,9 +78,9 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             return artifact;
         }
 
-        public new object FromArtifact(string value, IPropertyType propertyType, object currentValue)
+        public override object FromArtifact(string value, IPropertyType propertyType, object currentValue, IContextCache contextCache)
         {
-            var entity = base.FromArtifact(value, propertyType, currentValue);
+            var entity = base.FromArtifact(value, propertyType, currentValue, contextCache);
 
             var jObj = entity as JObject;
             if (jObj != null && !string.IsNullOrWhiteSpace(value) && value.DetectIsJson())
@@ -95,11 +95,11 @@ namespace Vendr.Deploy.Connectors.ValueConnectors
             return jObj ?? entity;
         }
 
-        object IValueConnector.FromArtifact(string value, IPropertyType propertyType, object currentValue)
-            => FromArtifact(value, propertyType, currentValue);
+        object IValueConnector2.FromArtifact(string value, IPropertyType propertyType, object currentValue, IContextCache contextCache)
+            => FromArtifact(value, propertyType, currentValue, contextCache);
 
-        string IValueConnector.ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies)
-            => ToArtifact(value, propertyType, dependencies);
+        string IValueConnector2.ToArtifact(object value, IPropertyType propertyType, ICollection<ArtifactDependency> dependencies, IContextCache contextCache)
+            => ToArtifact(value, propertyType, dependencies, contextCache);
 
         public class BaseValue
         {
