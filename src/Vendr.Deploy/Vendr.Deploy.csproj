@@ -16,8 +16,8 @@
 
     <ItemGroup>
         <PackageReference Include="Vendr.Umbraco.Startup" Version="3.0.0" />
-        <PackageReference Include="Umbraco.Deploy.Infrastructure" Version="11.0.0" />
-        <PackageReference Include="Umbraco.Deploy.Contrib" Version="11.0.0" />
+        <PackageReference Include="Umbraco.Deploy.Infrastructure" Version="11.1.0" />
+        <PackageReference Include="Umbraco.Deploy.Contrib" Version="11.0.1" />
     </ItemGroup>
 
     <!-- Workaround for this bug (replace the analyzer name with the one you need to exclude (filename only, no extension) -->
