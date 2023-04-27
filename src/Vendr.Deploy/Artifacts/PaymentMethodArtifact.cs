@@ -16,7 +16,7 @@ namespace Vendr.Deploy.Artifacts
         public string ImageId { get; set; }
 
         public string PaymentProviderAlias { get; set; }
-        public IDictionary<string, string> PaymentProviderSettings { get; set; }
+        public SortedDictionary<string, string> PaymentProviderSettings { get; set; }
         public bool CanFetchPaymentStatuses { get; set; }
         public bool CanCapturePayments { get; set; }
         public bool CanCancelPayments { get; set; }

@@ -30,7 +30,7 @@ namespace Vendr.Deploy.Artifacts
 
     public class TranslatedValueArtifact<T>
     {
-        public IDictionary<string, T> Translations { get; set; }
+        public SortedDictionary<string, T> Translations { get; set; }
         public T DefaultValue { get; set; }
     }
 }
