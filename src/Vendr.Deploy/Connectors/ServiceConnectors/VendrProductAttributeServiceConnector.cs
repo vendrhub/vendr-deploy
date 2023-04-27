@@ -61,7 +61,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 Name = new TranslatedValueArtifact<string>
                 {
-                    Translations = entity.Name.GetTranslatedValues().ToDictionary(x => x.Key, x => x.Value),
+                    Translations = new SortedDictionary<string, string>(entity.Name.GetTranslatedValues().ToDictionary(x => x.Key, x => x.Value)),
                     DefaultValue = entity.Name.GetDefaultValue()
                 },
                 Code = entity.Alias,
@@ -70,7 +70,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                     Alias = x.Alias,
                     Name = new TranslatedValueArtifact<string>
                     {
-                        Translations = x.Name.GetTranslatedValues().ToDictionary(y => y.Key, y => y.Value),
+                        Translations = new SortedDictionary<string, string>(x.Name.GetTranslatedValues().ToDictionary(y => y.Key, y => y.Value)),
                         DefaultValue = x.Name.GetDefaultValue()
                     }
                 }).ToList(),
