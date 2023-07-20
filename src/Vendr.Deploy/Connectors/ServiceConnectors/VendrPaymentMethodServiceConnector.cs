@@ -89,7 +89,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 var servicesPrices = new List<ServicePriceArtifact>();
 
-                foreach (var price in entity.Prices)
+                foreach (var price in entity.Prices.OrderBy(x => x.CountryId).ThenBy(x => x.RegionId).ThenBy(x => x.CurrencyId))
                 {
                     var spArtifact = new ServicePriceArtifact { Value = price.Value };
 
@@ -134,7 +134,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 var allowedCountryRegions = new List<AllowedCountryRegionArtifact>();
 
-                foreach (var acr in entity.AllowedCountryRegions)
+                foreach (var acr in entity.AllowedCountryRegions.OrderBy(x => x.CountryId).ThenBy(x => x.RegionId))
                 {
                     var acrArtifact = new AllowedCountryRegionArtifact();
 
