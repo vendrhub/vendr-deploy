@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Vendr.Deploy.Converters;
 using Umbraco.Cms.Core;
+using Umbraco.Deploy.Infrastructure.Serialization;
 
 namespace Vendr.Deploy.Artifacts
 {

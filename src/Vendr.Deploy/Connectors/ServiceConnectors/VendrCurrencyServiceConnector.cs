@@ -68,7 +68,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 var allowedCountryArtifacts = new List<AllowedCountryArtifact>();
 
-                foreach (var allowedCountry in entity.AllowedCountries)
+                foreach (var allowedCountry in entity.AllowedCountries.OrderBy(x => x.CountryId))
                 {
                     var countryDepUdi = new GuidUdi(VendrConstants.UdiEntityType.Country, allowedCountry.CountryId);
                     var countryDep = new VendrArtifactDependency(countryDepUdi);

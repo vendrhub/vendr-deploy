@@ -63,9 +63,9 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
                 Sku = entity.Sku,
                 ImageId = entity.ImageId, // Could be a UDI?
                 PaymentProviderAlias = entity.PaymentProviderAlias,
-                PaymentProviderSettings = entity.PaymentProviderSettings
+                PaymentProviderSettings = new SortedDictionary<string, string>(entity.PaymentProviderSettings
                     .Where(x => !StringExtensions.InvariantContains(_settingsAccessor.Settings.PaymentMethods.IgnoreSettings, x.Key)) // Ignore any settings that shouldn't be transfered
-                    .ToDictionary(x => x.Key, x => x.Value), // Could contain UDIs?
+                    .ToDictionary(x => x.Key, x => x.Value)), // Could contain UDIs?
                 CanFetchPaymentStatuses = entity.CanFetchPaymentStatuses,
                 CanCapturePayments = entity.CanCapturePayments,
                 CanCancelPayments = entity.CanCancelPayments,
@@ -89,7 +89,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 var servicesPrices = new List<ServicePriceArtifact>();
 
-                foreach (var price in entity.Prices)
+                foreach (var price in entity.Prices.OrderBy(x => x.CountryId).ThenBy(x => x.RegionId).ThenBy(x => x.CurrencyId))
                 {
                     var spArtifact = new ServicePriceArtifact { Value = price.Value };
 
@@ -134,7 +134,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             {
                 var allowedCountryRegions = new List<AllowedCountryRegionArtifact>();
 
-                foreach (var acr in entity.AllowedCountryRegions)
+                foreach (var acr in entity.AllowedCountryRegions.OrderBy(x => x.CountryId).ThenBy(x => x.RegionId))
                 {
                     var acrArtifact = new AllowedCountryRegionArtifact();
 

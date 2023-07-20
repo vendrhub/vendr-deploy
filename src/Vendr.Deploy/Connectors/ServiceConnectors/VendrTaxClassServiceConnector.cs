@@ -66,7 +66,7 @@ namespace Vendr.Deploy.Connectors.ServiceConnectors
             // Country region tax rates
             var countryRegionTaxRateArtifacts = new List<CountryRegionTaxRateArtifact>();
 
-            foreach (var countryRegionTaxRate in entity.CountryRegionTaxRates)
+            foreach (var countryRegionTaxRate in entity.CountryRegionTaxRates.OrderBy(x => x.CountryId).ThenBy(x => x.RegionId))
             {
                 var crtrArtifact = new CountryRegionTaxRateArtifact
                 {
